@@ -1,5 +1,5 @@
 # GenericHostWPFOpenCV
-.NET Generic Host와 OpenCV를 사용하여 DevExpress WPF MVVM 개발 예제입니다.
+.NET Generic Host와 OpenCVSharp을 이용한 DevExpress WPF MVVM 개발 예제입니다.
 
 1. App.xaml.cs
     - DevExpress MVVM Framework(이하 dxmvvm)에서 Messenger 방식으로 ViewModel간 데이터 교환을 합니다.
