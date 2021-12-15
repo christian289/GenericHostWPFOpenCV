@@ -1,0 +1,43 @@
+﻿<Window x:Class="OpenCVFindContour.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OpenCVFindContour.View"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="MainWindow" 
+        Height="550" 
+        Width="1920"
+        DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="480"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <local:Canny Grid.Row="0" Grid.Column="0"/>
+        <local:FindContour_ApproxPolyDP Grid.Row="0" Grid.Column="1"/>
+        <local:FindContour_MinAreaRect Grid.Row="0" Grid.Column="2"/>
+        <Grid Grid.Row="1"
+              Grid.Column="0"
+              Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Content="카메라 연결 시작" 
+                    Grid.Column="0"
+                    Command="{Binding CameraStartCommand}" 
+                    IsEnabled="{Binding CameraStartButtonEnabled}"/>
+            <Button Content="카메라 연결 종료" 
+                    Grid.Column="1" 
+                    Command="{Binding CameraStopCommand}" 
+                    IsEnabled="{Binding CameraStopButtonEnabled}"/>
+        </Grid>
+    </Grid>
+</Window>
