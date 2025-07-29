@@ -1,4 +1,6 @@
-﻿namespace OpenCVFindContour.Converter;
+﻿using Image = System.Drawing.Image;
+
+namespace OpenCVFindContour.Converter;
 
 
 [ValueConversion(typeof(Bitmap), typeof(BitmapSource))]
