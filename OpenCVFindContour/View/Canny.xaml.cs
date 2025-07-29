@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace OpenCVFindContour.View;
+﻿namespace OpenCVFindContour.View;
 
 public partial class Canny : UserControl
 {
