@@ -13,13 +13,19 @@ public partial class App : Application
         host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, service) =>
             {
-                //service.AddTransient<VideoCapture>(c => new VideoCapture(1, VideoCaptureAPIs.DSHOW));
-                service.AddTransient<VideoCapture>();
+                service.AddKeyedTransient<VideoCapture>("VideoCapture1", (sp) =>
+                {
+                    var videoCapture = new VideoCapture(1, VideoCaptureAPIs.DSHOW);
+                    if (!videoCapture.IsOpened())
+                    {
+                        throw new InvalidOperationException("Failed to open video capture device.");
+                    }
+                    return videoCapture;
+                });
                 service.AddTransient<MainWindowViewModel>();
                 service.AddTransient<CannyViewModel>();
                 service.AddTransient<FindContour_MinAreaRectViewModel>();
                 service.AddTransient<FindContour_ApproxPolyDPViewModel>();
-                service.AddTransient<MainWindow>();
             })
             .Build();
         ServiceProvider = host.Services;

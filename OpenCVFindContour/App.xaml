@@ -1,12 +1,15 @@
 ﻿<Application x:Class="OpenCVFindContour.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cn="clr-namespace:OpenCVFindContour.Converter"
              xmlns:local="clr-namespace:OpenCVFindContour"
              xmlns:vm="clr-namespace:OpenCVFindContour.ViewModel"
              StartupUri="View/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <vm:ViewModelLocator x:Key="Locator" />
+            <cn:BitmapToBitmapSourceConverter x:Key="BitmapToBitmapSourceConverter" />
+            <cn:MatToWriteableBitmapConverter x:Key="MatToWriteableBitmapConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

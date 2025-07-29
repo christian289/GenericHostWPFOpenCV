@@ -5,15 +5,19 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly VideoCapture opencvVideo;
     CancellationTokenSource tokenSource;
 
-    public virtual bool CameraStartButtonEnabled { get; set; } = true;
-    public virtual bool CameraStopButtonEnabled { get; set; } = false;
+    [ObservableProperty]
+    bool _cameraStartButtonEnabled = true;
 
-    public MainWindowViewModel(VideoCapture opencvVideo)
+    [ObservableProperty]
+    bool _cameraStopButtonEnabled = false;
+
+    public MainWindowViewModel()
     {
-        this.opencvVideo = opencvVideo;
+        this.opencvVideo = new VideoCapture(1, VideoCaptureAPIs.DSHOW);
     }
 
-    public virtual void CameraStart()
+    [RelayCommand]
+    public void CameraStart()
     {
         tokenSource = new CancellationTokenSource();
         Task cameraTask = Task.Factory.StartNew(() =>
@@ -35,6 +39,7 @@ public partial class MainWindowViewModel : ObservableObject
         CameraStopButtonEnabled = true;
     }
 
+    [RelayCommand]
     public virtual void CameraStop()
     {
         tokenSource.Cancel();
