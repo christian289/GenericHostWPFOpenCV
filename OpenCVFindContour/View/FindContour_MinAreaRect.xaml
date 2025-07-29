@@ -5,9 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:OpenCVFindContour.View"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenCVFindContour.ViewModel"
+             d:DataContext="{d:DesignInstance vm:FindContour_MinAreaRectViewModel}"
              d:DesignHeight="480"
              d:DesignWidth="640"
-             DataContext="{Binding Source={StaticResource Locator}, Path=FindContour_MinAreaRectViewModel}"
              mc:Ignorable="d">
     <Grid x:Name="grid">
         <TextBlock HorizontalAlignment="Left"

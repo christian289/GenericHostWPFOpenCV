@@ -1,23 +1,63 @@
-﻿using Point = OpenCvSharp.Point;
+﻿using OpenCVFindContour.Services;
+using Point = OpenCvSharp.Point;
 
 namespace OpenCVFindContour.ViewModel;
 
-public partial class FindContour_ApproxPolyDPViewModel : ObservableRecipient, IRecipient<Mat>
+public partial class FindContour_ApproxPolyDPViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<ActivatedCameraHandleService>>
 {
-    [ObservableProperty]
-    public Mat? _printMat;
+    IDisposable? currentSubscription;
+    ActivatedCameraHandleService? currentCameraService;
 
     public FindContour_ApproxPolyDPViewModel()
     {
         IsActive = true;
     }
 
-    public void Receive(Mat src)
+    [ObservableProperty]
+    Mat? _printMat;
+
+    public void Receive(PropertyChangedMessage<ActivatedCameraHandleService> message)
+    {
+        if (message.PropertyName == nameof(MainWindowViewModel.SelectedCameraHandleService) && message.NewValue is not null)
+        {
+            currentCameraService = message.NewValue;
+            MakeSubscription(currentCameraService);
+        }
+    }
+
+    public void RefreshSubscription()
+    {
+        if (currentCameraService is null)
+            return;
+        MakeSubscription(currentCameraService);
+    }
+
+    private void MakeSubscription(ActivatedCameraHandleService service)
+    {
+        if (currentCameraService is null)
+            return;
+
+        currentSubscription?.Dispose();
+        currentCameraService = service;
+        currentSubscription = currentCameraService.ImageStream
+            .ObserveOn(SynchronizationContext.Current!)
+            .Subscribe(mat =>
+            {
+                if (mat.Empty())
+                {
+                    PrintMat = null;
+                    return;
+                }
+                ProcessImage(mat);
+            });
+    }
+
+    private void ProcessImage(Mat mat)
     {
         Mat src_copy = new();
-        src.CopyTo(src_copy);
+        mat.CopyTo(src_copy);
         Mat grayscale = new();
-        Cv2.CvtColor(src, grayscale, ColorConversionCodes.BGR2GRAY);
+        Cv2.CvtColor(mat, grayscale, ColorConversionCodes.BGR2GRAY);
         Mat canny = new();
         Cv2.Canny(
             src: grayscale,

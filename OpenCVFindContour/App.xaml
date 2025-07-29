@@ -4,10 +4,49 @@
              xmlns:cn="clr-namespace:OpenCVFindContour.Converter"
              xmlns:local="clr-namespace:OpenCVFindContour"
              xmlns:vm="clr-namespace:OpenCVFindContour.ViewModel"
-             StartupUri="View/MainWindow.xaml">
+             Startup="Application_Startup">
     <Application.Resources>
         <ResourceDictionary>
-            <vm:ViewModelLocator x:Key="Locator" />
+            <Style x:Key="ButtonLikeRadioButton" TargetType="RadioButton">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Border x:Name="Border"
+                                    Padding="12,6"
+                                    Background="LightGray"
+                                    BorderBrush="Gray"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <!--  선택된 상태 (IsChecked=True)  -->
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="DodgerBlue" />
+                                    <Setter Property="Foreground" Value="White" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="DarkBlue" />
+                                </Trigger>
+                                <!--  마우스 오버  -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="LightBlue" />
+                                </Trigger>
+                                <!--  클릭 중  -->
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="SteelBlue" />
+                                </Trigger>
+                                <!--  선택된 상태에서 마우스 오버  -->
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsChecked" Value="True" />
+                                        <Condition Property="IsMouseOver" Value="True" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="Border" Property="Background" Value="RoyalBlue" />
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

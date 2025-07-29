@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:OpenCVFindContour.View"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenCVFindContour.ViewModel"
              x:Name="userControl"
+             d:DataContext="{d:DesignInstance vm:FindContour_ApproxPolyDPViewModel}"
              d:DesignHeight="480"
              d:DesignWidth="640"
-             DataContext="{Binding Source={StaticResource Locator}, Path=FindContour_ApproxPolyDPViewModel}"
              mc:Ignorable="d">
     <Grid x:Name="grid">
         <TextBlock HorizontalAlignment="Left"

@@ -1,43 +1,94 @@
-﻿using OpenCVFindContour.Interfaces;
+﻿using OpenCVFindContour.Services;
 
 namespace OpenCVFindContour.ViewModel;
 
-public partial class MainWindowViewModel : ObservableObject
+public partial class MainWindowViewModel : ObservableRecipient
 {
-    public MainWindowViewModel(IEnumerable<IActivatedCameraHandleService> cameraHandleServices)
-    {
-        ActivatedCameraHandleCollection = new ObservableCollection<IActivatedCameraHandleService>(cameraHandleServices);
+    readonly ILogger<MainWindowViewModel> logger;
 
-        CameraStartButtonEnabled = true;
-        CameraStopButtonEnabled = false;
+    public MainWindowViewModel(
+        ILogger<MainWindowViewModel> logger,
+        CannyViewModel cannyViewModel,
+        FindContour_ApproxPolyDPViewModel findContour_ApproxPolyDPViewModel,
+        FindContour_MinAreaRectViewModel findContour_MinAreaRectViewModel)
+    {
+        IsActive = true;
+
+        this.logger = logger;
+        CannyViewModel = cannyViewModel;
+        FindContour_ApproxPolyDPViewModel = findContour_ApproxPolyDPViewModel;
+        FindContour_MinAreaRectViewModel = findContour_MinAreaRectViewModel;
+
+        int cameraCount = 10;
+        List<ActivatedCameraHandleService> cameraHandleServices = new(cameraCount);
+        for (int i = 0; i < cameraCount; i++)
+        {
+            var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
+
+            if (videoCapture.IsOpened())
+                cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture, 60));
+        }
+
+        ActivatedCameraHandleCollection = new ObservableCollection<ActivatedCameraHandleService>(cameraHandleServices);
+
+        if (ActivatedCameraHandleCollection.Count == 0)
+        {
+            logger.ZLogCritical($"No camera devices found.");
+            return;
+        }
+
+        SelectedCameraHandleService = ActivatedCameraHandleCollection.First();
+
+        IsCameraStartButtonEnabled = true;
+        IsCameraStopButtonEnabled = false;
     }
 
-    [ObservableProperty]
-    ObservableCollection<IActivatedCameraHandleService> _activatedCameraHandleCollection;
+    public CannyViewModel CannyViewModel { get; init; }
+    public FindContour_ApproxPolyDPViewModel FindContour_ApproxPolyDPViewModel { get; init; }
+    public FindContour_MinAreaRectViewModel FindContour_MinAreaRectViewModel { get; init; }
 
     [ObservableProperty]
-    bool _cameraStartButtonEnabled;
+    ObservableCollection<ActivatedCameraHandleService> _activatedCameraHandleCollection;
 
     [ObservableProperty]
-    bool _cameraStopButtonEnabled;
+    [NotifyPropertyChangedRecipients]
+    ActivatedCameraHandleService _selectedCameraHandleService;
 
-    [RelayCommand]
-    public void CameraStart()
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CameraStartCommand))]
+    bool _isCameraStartButtonEnabled;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CameraStartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
+    bool _isCameraStopButtonEnabled;
+
+    [RelayCommand(CanExecute = nameof(CanCameraStart))]
+    public async Task CameraStart()
     {
         foreach (var cameraHandleService in ActivatedCameraHandleCollection)
-            cameraHandleService.StartCapture();
+            await cameraHandleService.StartCaptureAsync();
 
-        CameraStartButtonEnabled = false;
-        CameraStopButtonEnabled = true;
+        CannyViewModel.RefreshSubscription();
+        FindContour_ApproxPolyDPViewModel.RefreshSubscription();
+        FindContour_MinAreaRectViewModel.RefreshSubscription();
+
+        IsCameraStopButtonEnabled = true;
+        IsCameraStartButtonEnabled = false;
     }
 
-    [RelayCommand]
-    public virtual void CameraStop()
+    public bool CanCameraStart() => !IsCameraStopButtonEnabled && IsCameraStartButtonEnabled;
+
+    [RelayCommand(CanExecute = nameof(CanCameraStop))]
+    public async Task CameraStop()
     {
         foreach (var cameraHandleService in ActivatedCameraHandleCollection)
-            cameraHandleService.StopCapture();
+            await cameraHandleService.StopCaptureAsync();
 
-        CameraStartButtonEnabled = true;
-        CameraStopButtonEnabled = false;
+        IsCameraStopButtonEnabled = false;
+        IsCameraStartButtonEnabled = true;
     }
+
+    public bool CanCameraStop() => IsCameraStopButtonEnabled && !IsCameraStartButtonEnabled;
 }

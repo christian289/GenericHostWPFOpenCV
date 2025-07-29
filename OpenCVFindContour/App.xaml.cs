@@ -1,5 +1,4 @@
-﻿using OpenCVFindContour.Interfaces;
-using OpenCVFindContour.Services;
+﻿using OpenCVFindContour.View;
 using OpenCVFindContour.ViewModel;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -22,35 +21,22 @@ public partial class App : Application
             })
             .ConfigureServices((context, service) =>
             {
-                for (int i = 0; i < 10; i++)
-                {
-                    var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
-
-                    if (videoCapture.IsOpened())
-                        service.AddSingleton<IActivatedCameraHandleService>(new ActivatedCameraHandleService(i, videoCapture, 60));
-                }
-                service.AddTransient<MainWindowViewModel>();
-                service.AddTransient<CannyViewModel>();
-                service.AddTransient<FindContour_MinAreaRectViewModel>();
-                service.AddTransient<FindContour_ApproxPolyDPViewModel>();
+                service.AddSingleton<MainWindowViewModel>();
+                service.AddSingleton<CannyViewModel>();
+                service.AddSingleton<FindContour_MinAreaRectViewModel>();
+                service.AddSingleton<FindContour_ApproxPolyDPViewModel>();
             })
             .Build();
         ServiceProvider = host.Services;
     }
 
-    protected override async void OnStartup(StartupEventArgs e)
+    private void Application_Startup(object sender, StartupEventArgs e)
     {
-        await host.StartAsync();
-        base.OnStartup(e);
-    }
-
-    protected override async void OnExit(ExitEventArgs e)
-    {
-        using (host)
+        host.Start();
+        MainWindow mainWindow = new()
         {
-            await host.StopAsync(TimeSpan.FromSeconds(5));
-        }
-
-        base.OnExit(e);
+            DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>()
+        };
+        mainWindow.Show();
     }
 }
