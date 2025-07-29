@@ -1,54 +1,46 @@
-﻿using DevExpress.Mvvm;
-using DevExpress.Mvvm.DataAnnotations;
-using OpenCvSharp;
-using System.Threading;
-using System.Threading.Tasks;
+﻿namespace OpenCVFindContour.ViewModel;
 
-namespace OpenCVFindContour.ViewModel
+public partial class MainWindowViewModel : ObservableObject
 {
-    [POCOViewModel]
-    public class MainWindowViewModel
+    private readonly VideoCapture opencvVideo;
+    CancellationTokenSource tokenSource;
+
+    public virtual bool CameraStartButtonEnabled { get; set; } = true;
+    public virtual bool CameraStopButtonEnabled { get; set; } = false;
+
+    public MainWindowViewModel(VideoCapture opencvVideo)
     {
-        private readonly VideoCapture opencvVideo;
-        CancellationTokenSource tokenSource;
+        this.opencvVideo = opencvVideo;
+    }
 
-        public virtual bool CameraStartButtonEnabled { get; set; } = true;
-        public virtual bool CameraStopButtonEnabled { get; set; } = false;
-
-        public MainWindowViewModel(VideoCapture opencvVideo)
+    public virtual void CameraStart()
+    {
+        tokenSource = new CancellationTokenSource();
+        Task cameraTask = Task.Factory.StartNew(() =>
         {
-            this.opencvVideo = opencvVideo;
-        }
+            Mat frame = new();
+            opencvVideo.Open(1, VideoCaptureAPIs.DSHOW);
 
-        public virtual void CameraStart()
-        {
-            tokenSource = new CancellationTokenSource();
-            Task cameraTask = Task.Factory.StartNew(() =>
+            if (opencvVideo.IsOpened())
             {
-                Mat frame = new();
-                opencvVideo.Open(1, VideoCaptureAPIs.DSHOW);
-
-                if (opencvVideo.IsOpened())
+                while (!tokenSource.IsCancellationRequested)
                 {
-                    while (!tokenSource.IsCancellationRequested)
-                    {
-                        opencvVideo.Read(frame);
-                        Messenger.Default.Send(frame);
-                    }
+                    opencvVideo.Read(frame);
+                    WeakReferenceMessenger.Default.Send(frame);
                 }
-            }, tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+        }, tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
-            CameraStartButtonEnabled = false;
-            CameraStopButtonEnabled = true;
-        }
+        CameraStartButtonEnabled = false;
+        CameraStopButtonEnabled = true;
+    }
 
-        public virtual void CameraStop()
-        {
-            tokenSource.Cancel();
-            opencvVideo.Release();
+    public virtual void CameraStop()
+    {
+        tokenSource.Cancel();
+        opencvVideo.Release();
 
-            CameraStartButtonEnabled = true;
-            CameraStopButtonEnabled = false;
-        }
+        CameraStartButtonEnabled = true;
+        CameraStopButtonEnabled = false;
     }
 }

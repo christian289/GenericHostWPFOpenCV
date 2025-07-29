@@ -1,15 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using OpenCvSharp;
-using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using OpenCVFindContour.View;
+using OpenCVFindContour.ViewModel;
 
-namespace OpenCvFindContour;
+namespace OpenCVFindContour;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
     private readonly IHost host;
@@ -18,17 +11,17 @@ public partial class App : Application
     public App()
     {
         host = Host.CreateDefaultBuilder()
-                .ConfigureServices((context, service) =>
-                {
-                    //service.AddTransient<VideoCapture>(c => new VideoCapture(1, VideoCaptureAPIs.DSHOW));
-                    service.AddTransient<VideoCapture>();
-                    service.AddTransient<MainWindowViewModel>();
-                    service.AddTransient<CannyViewModel>();
-                    service.AddTransient<FindContour_MinAreaRectViewModel>();
-                    service.AddTransient<FindContour_ApproxPolyDPViewModel>();
-                    service.AddTransient<MainWindow>();
-                })
-                .Build();
+            .ConfigureServices((context, service) =>
+            {
+                //service.AddTransient<VideoCapture>(c => new VideoCapture(1, VideoCaptureAPIs.DSHOW));
+                service.AddTransient<VideoCapture>();
+                service.AddTransient<MainWindowViewModel>();
+                service.AddTransient<CannyViewModel>();
+                service.AddTransient<FindContour_MinAreaRectViewModel>();
+                service.AddTransient<FindContour_ApproxPolyDPViewModel>();
+                service.AddTransient<MainWindow>();
+            })
+            .Build();
         ServiceProvider = host.Services;
     }
 
