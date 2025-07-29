@@ -20,6 +20,7 @@ public partial class FindContour_MinAreaRectViewModel : ObservableRecipient, IRe
     {
         if (message.PropertyName == nameof(MainWindowViewModel.SelectedCameraHandleService) && message.NewValue is not null)
         {
+            currentSubscription?.Dispose();
             currentCameraService = message.NewValue;
             MakeSubscription(currentCameraService);
         }

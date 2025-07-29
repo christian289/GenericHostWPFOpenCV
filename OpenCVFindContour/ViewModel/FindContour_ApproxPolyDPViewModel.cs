@@ -20,6 +20,7 @@ public partial class FindContour_ApproxPolyDPViewModel : ObservableRecipient, IR
     {
         if (message.PropertyName == nameof(MainWindowViewModel.SelectedCameraHandleService) && message.NewValue is not null)
         {
+            currentSubscription?.Dispose();
             currentCameraService = message.NewValue;
             MakeSubscription(currentCameraService);
         }

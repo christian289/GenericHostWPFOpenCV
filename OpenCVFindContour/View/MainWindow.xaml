@@ -18,34 +18,17 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" MinHeight="100" />
         </Grid.RowDefinitions>
-        <ItemsControl Grid.Row="0" ItemsSource="{Binding ActivatedCameraHandleCollection}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Columns="2" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <RadioButton Content="{Binding}" GroupName="ActivatedCameras">
-                        <RadioButton.ContentTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding DisplayName}" />
-                            </DataTemplate>
-                        </RadioButton.ContentTemplate>
-                        <RadioButton.IsChecked>
-                            <MultiBinding Converter="{cnvt:MultiEqualsConverter}" Mode="TwoWay">
-                                <Binding Path="DataContext.SelectedCameraHandleService">
-                                    <Binding.RelativeSource>
-                                        <RelativeSource AncestorType="{x:Type Window}" Mode="FindAncestor" />
-                                    </Binding.RelativeSource>
-                                </Binding>
-                                <Binding Path="." />
-                            </MultiBinding>
-                        </RadioButton.IsChecked>
-                    </RadioButton>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <TextBlock Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       Text="카메라 선택: " />
+            <ComboBox Margin="0,5,0,5"
+                      VerticalContentAlignment="Center"
+                      DisplayMemberPath="DisplayName"
+                      IsEnabled="{Binding IsCameraStartButtonEnabled}"
+                      ItemsSource="{Binding ActivatedCameraHandleCollection}"
+                      SelectedItem="{Binding SelectedCameraHandleService}" />
+        </StackPanel>
         <UniformGrid Grid.Row="1" Columns="3">
             <local:Canny DataContext="{Binding CannyViewModel}" />
             <local:FindContour_ApproxPolyDP DataContext="{Binding FindContour_ApproxPolyDPViewModel}" />

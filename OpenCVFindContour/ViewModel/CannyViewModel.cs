@@ -19,6 +19,7 @@ public partial class CannyViewModel : ObservableRecipient, IRecipient<PropertyCh
     {
         if (message.PropertyName == nameof(MainWindowViewModel.SelectedCameraHandleService) && message.NewValue is not null)
         {
+            currentSubscription?.Dispose();
             currentCameraService = message.NewValue;
             MakeSubscription(currentCameraService);
         }
