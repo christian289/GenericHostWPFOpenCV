@@ -2,13 +2,13 @@
 
 
 [ValueConversion(typeof(Bitmap), typeof(BitmapSource))]
-public class BitmapToBitmapSourceConverter : IValueConverter
+public sealed class BitmapToBitmapSourceConverter : ConverterMarkupExtension<BitmapToBitmapSourceConverter>
 {
     [DllImport("gdi32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool DeleteObject(IntPtr value);
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is null || value is not Image myImage)
         {
@@ -47,7 +47,7 @@ public class BitmapToBitmapSourceConverter : IValueConverter
         }
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

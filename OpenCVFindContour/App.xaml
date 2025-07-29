@@ -8,8 +8,6 @@
     <Application.Resources>
         <ResourceDictionary>
             <vm:ViewModelLocator x:Key="Locator" />
-            <cn:BitmapToBitmapSourceConverter x:Key="BitmapToBitmapSourceConverter" />
-            <cn:MatToWriteableBitmapConverter x:Key="MatToWriteableBitmapConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

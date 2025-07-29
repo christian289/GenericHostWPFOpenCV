@@ -14,6 +14,8 @@
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.11.0.20250507" />
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.11.0.20250507" />
     <PackageReference Include="OpenCvSharp4.WpfExtensions" Version="4.11.0.20250507" />
+    <PackageReference Include="System.Reactive.Linq" Version="6.0.1" />
+    <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
 
 </Project>

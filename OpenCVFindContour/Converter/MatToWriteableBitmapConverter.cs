@@ -1,9 +1,9 @@
 ﻿namespace OpenCVFindContour.Converter;
 
 [ValueConversion(typeof(Mat), typeof(WriteableBitmap))]
-public class MatToWriteableBitmapConverter : IValueConverter
+public sealed class MatToWriteableBitmapConverter : ConverterMarkupExtension<MatToWriteableBitmapConverter>
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is not Mat cnvt)
         {
@@ -44,7 +44,7 @@ public class MatToWriteableBitmapConverter : IValueConverter
         };
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

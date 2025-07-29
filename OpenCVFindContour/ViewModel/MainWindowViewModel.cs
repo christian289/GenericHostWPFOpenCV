@@ -1,39 +1,31 @@
-﻿namespace OpenCVFindContour.ViewModel;
+﻿using OpenCVFindContour.Interfaces;
+
+namespace OpenCVFindContour.ViewModel;
 
 public partial class MainWindowViewModel : ObservableObject
 {
-    private readonly VideoCapture opencvVideo;
-    CancellationTokenSource tokenSource;
-
-    [ObservableProperty]
-    bool _cameraStartButtonEnabled = true;
-
-    [ObservableProperty]
-    bool _cameraStopButtonEnabled = false;
-
-    public MainWindowViewModel()
+    public MainWindowViewModel(IEnumerable<IActivatedCameraHandleService> cameraHandleServices)
     {
-        this.opencvVideo = new VideoCapture(1, VideoCaptureAPIs.DSHOW);
+        ActivatedCameraHandleCollection = new ObservableCollection<IActivatedCameraHandleService>(cameraHandleServices);
+
+        CameraStartButtonEnabled = true;
+        CameraStopButtonEnabled = false;
     }
+
+    [ObservableProperty]
+    ObservableCollection<IActivatedCameraHandleService> _activatedCameraHandleCollection;
+
+    [ObservableProperty]
+    bool _cameraStartButtonEnabled;
+
+    [ObservableProperty]
+    bool _cameraStopButtonEnabled;
 
     [RelayCommand]
     public void CameraStart()
     {
-        tokenSource = new CancellationTokenSource();
-        Task cameraTask = Task.Factory.StartNew(() =>
-        {
-            Mat frame = new();
-            opencvVideo.Open(1, VideoCaptureAPIs.DSHOW);
-
-            if (opencvVideo.IsOpened())
-            {
-                while (!tokenSource.IsCancellationRequested)
-                {
-                    opencvVideo.Read(frame);
-                    WeakReferenceMessenger.Default.Send(frame);
-                }
-            }
-        }, tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        foreach (var cameraHandleService in ActivatedCameraHandleCollection)
+            cameraHandleService.StartCapture();
 
         CameraStartButtonEnabled = false;
         CameraStopButtonEnabled = true;
@@ -42,8 +34,8 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     public virtual void CameraStop()
     {
-        tokenSource.Cancel();
-        opencvVideo.Release();
+        foreach (var cameraHandleService in ActivatedCameraHandleCollection)
+            cameraHandleService.StopCapture();
 
         CameraStartButtonEnabled = true;
         CameraStopButtonEnabled = false;

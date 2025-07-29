@@ -1,5 +1,7 @@
-﻿using OpenCVFindContour.View;
+﻿using OpenCVFindContour.Interfaces;
+using OpenCVFindContour.Services;
 using OpenCVFindContour.ViewModel;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace OpenCVFindContour;
 
@@ -11,17 +13,22 @@ public partial class App : Application
     public App()
     {
         host = Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddZLoggerConsole();
+                //logging.AddDebug();
+                logging.SetMinimumLevel(LogLevel.Information);
+            })
             .ConfigureServices((context, service) =>
             {
-                service.AddKeyedTransient<VideoCapture>("VideoCapture1", (sp) =>
+                for (int i = 0; i < 10; i++)
                 {
-                    var videoCapture = new VideoCapture(1, VideoCaptureAPIs.DSHOW);
-                    if (!videoCapture.IsOpened())
-                    {
-                        throw new InvalidOperationException("Failed to open video capture device.");
-                    }
-                    return videoCapture;
-                });
+                    var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
+
+                    if (videoCapture.IsOpened())
+                        service.AddSingleton<IActivatedCameraHandleService>(new ActivatedCameraHandleService(i, videoCapture, 60));
+                }
                 service.AddTransient<MainWindowViewModel>();
                 service.AddTransient<CannyViewModel>();
                 service.AddTransient<FindContour_MinAreaRectViewModel>();
