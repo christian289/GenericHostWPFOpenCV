@@ -1,11 +1,6 @@
-﻿using DevExpress.Mvvm;
-using DevExpress.Mvvm.DataAnnotations;
-using OpenCvSharp;
-
-namespace OpenCVFindContour.ViewModel
+﻿namespace OpenCVFindContour.ViewModel
 {
-    [POCOViewModel]
-    public class CannyViewModel
+    public partial class CannyViewModel : ObservableObject
     {
         public virtual Mat PrintMat { get; set; }
 
