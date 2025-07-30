@@ -58,7 +58,12 @@ public partial class FindContour_ApproxPolyDPViewModel : ObservableRecipient, IR
         Mat src_copy = new();
         mat.CopyTo(src_copy);
         Mat grayscale = new();
-        Cv2.CvtColor(mat, grayscale, ColorConversionCodes.BGR2GRAY);
+
+        if (mat.Channels() == 3)
+            Cv2.CvtColor(mat, grayscale, ColorConversionCodes.BGR2GRAY);
+        else // 1 채널일 경우
+            Cv2.CvtColor(mat, grayscale, ColorConversionCodes.GRAY2BGR);
+        
         Mat canny = new();
         Cv2.Canny(
             src: grayscale,

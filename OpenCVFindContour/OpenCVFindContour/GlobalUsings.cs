@@ -5,6 +5,7 @@ global using CommunityToolkit.Mvvm.Messaging.Messages;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.Xaml.Behaviors;
 global using OpenCvSharp;
 global using OpenCvSharp.WpfExtensions;
 global using System.Collections.ObjectModel;

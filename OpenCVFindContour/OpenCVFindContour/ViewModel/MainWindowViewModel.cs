@@ -23,10 +23,10 @@ public partial class MainWindowViewModel : ObservableRecipient
         List<ActivatedCameraHandleService> cameraHandleServices = new(cameraCount);
         for (int i = 0; i < cameraCount; i++)
         {
-            var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
-
+            //var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
+            var videoCapture = new VideoCapture(i, VideoCaptureAPIs.MSMF); 
             if (videoCapture.IsOpened())
-                cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture, 60));
+                cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture, 30));
         }
 
         ActivatedCameraHandleCollection = new ObservableCollection<ActivatedCameraHandleService>(cameraHandleServices);
@@ -55,6 +55,24 @@ public partial class MainWindowViewModel : ObservableRecipient
     ActivatedCameraHandleService _selectedCameraHandleService;
 
     [ObservableProperty]
+    double _cannyViewActualHeight;
+
+    [ObservableProperty]
+    double _cannyViewActualWidth;
+
+    [ObservableProperty]
+    double _approxPolyDPViewActualHeight;
+
+    [ObservableProperty]
+    double _approxPolyDPViewActualWidth;
+
+    [ObservableProperty]
+    double _minAreaRectActualHeight;
+
+    [ObservableProperty]
+    double _minAreaRectActualWidth;
+
+    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
     [NotifyCanExecuteChangedFor(nameof(CameraStartCommand))]
     bool _isCameraStartButtonEnabled;
@@ -68,7 +86,10 @@ public partial class MainWindowViewModel : ObservableRecipient
     public async Task CameraStart()
     {
         foreach (var cameraHandleService in ActivatedCameraHandleCollection)
+        {
+            cameraHandleService.InitializeCamera();
             await cameraHandleService.StartCaptureAsync();
+        }   
 
         CannyViewModel.RefreshSubscription();
         FindContour_ApproxPolyDPViewModel.RefreshSubscription();

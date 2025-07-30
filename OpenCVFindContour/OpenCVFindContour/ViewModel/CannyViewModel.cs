@@ -57,7 +57,12 @@ public partial class CannyViewModel : ObservableRecipient, IRecipient<PropertyCh
         Mat copy_mat = new();
         mat.CopyTo(copy_mat);
         Mat grayscale = new();
-        Cv2.CvtColor(copy_mat, grayscale, ColorConversionCodes.BGR2GRAY);
+
+        if (copy_mat.Channels() == 3)
+            Cv2.CvtColor(copy_mat, grayscale, ColorConversionCodes.BGR2GRAY);
+        else // 1 채널일 경우
+            Cv2.CvtColor(copy_mat, grayscale, ColorConversionCodes.GRAY2BGR);
+
         Mat canny = new();
         Cv2.Canny(
             src: grayscale,

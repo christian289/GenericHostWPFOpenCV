@@ -24,9 +24,6 @@ public sealed class ActivatedCameraHandleService : IDisposable
 
         _imageSubject = new Subject<Mat>();
         _captureSemaphore = new SemaphoreSlim(1, 1);
-
-        InitializeCamera();
-
     }
 
     public string DisplayName => $"Camera {CameraIndex}";
@@ -35,12 +32,12 @@ public sealed class ActivatedCameraHandleService : IDisposable
     public bool IsCapturing => _isCapturing && !_isDisposed;
     public IObservable<Mat> ImageStream => _imageSubject.AsObservable();
 
-    private void InitializeCamera()
+    public void InitializeCamera(int renderWidth = 1920, int renderHeight = 1080)
     {
         try
         {
-            _videoCapture.Set(VideoCaptureProperties.FrameWidth, 1920);
-            _videoCapture.Set(VideoCaptureProperties.FrameHeight, 1080);
+            _videoCapture.Set(VideoCaptureProperties.FrameWidth, renderWidth);
+            _videoCapture.Set(VideoCaptureProperties.FrameHeight, renderHeight);
             _videoCapture.Set(VideoCaptureProperties.Fps, Fps);
             _videoCapture.Set(VideoCaptureProperties.ConvertRgb, 0); // 불필요한 색상 변환을 방지
         }
