@@ -40,7 +40,7 @@ public partial class NormalViewModel : ObservableRecipient, IRecipient<PropertyC
         currentSubscription?.Dispose();
         currentCameraService = service;
         currentSubscription = currentCameraService.ImageStream
-            .SubscribeOn(SynchronizationContext.Current!)
+            .ObserveOn(SynchronizationContext.Current!) // Application.Dispatcher.Invoke 와 동일한 효과
             .Subscribe(mat =>
             {
                 if (mat.Empty())
