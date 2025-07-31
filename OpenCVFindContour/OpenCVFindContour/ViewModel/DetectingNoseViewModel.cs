@@ -1,17 +1,23 @@
-﻿using OpenCVFindContour.Services;
+﻿using Microsoft.Extensions.Logging;
+using OpenCVFindContour.Clients;
+using OpenCVFindContour.Services;
 
 namespace OpenCVFindContour.ViewModel;
 
-public partial class NormalViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<ActivatedCameraHandleService>>
+public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<ActivatedCameraHandleService>>
 {
-    private readonly ILogger<NormalViewModel> logger;
+    private readonly ILogger<DetectingNoseViewModel> logger;
+    private readonly FaceMeshClient faceMeshClient;
     IDisposable? currentSubscription;
     ActivatedCameraHandleService? currentCameraService;
 
-    public NormalViewModel(ILogger<NormalViewModel> logger)
+    public DetectingNoseViewModel(
+        ILogger<DetectingNoseViewModel> logger,
+        FaceMeshClient faceMeshClient)
     {
         IsActive = true;
         this.logger = logger;
+        this.faceMeshClient = faceMeshClient;
     }
 
     [ObservableProperty]
@@ -27,10 +33,12 @@ public partial class NormalViewModel : ObservableRecipient, IRecipient<PropertyC
         }
     }
 
-    public void RefreshSubscription()
+    public async Task RefreshSubscription()
     {
         if (currentCameraService is null)
             return;
+        faceMeshClient.StartPythonProcess();
+        await faceMeshClient.ConnectPipe();
         MakeSubscription(currentCameraService);
     }
 
@@ -43,19 +51,27 @@ public partial class NormalViewModel : ObservableRecipient, IRecipient<PropertyC
         currentCameraService = service;
         currentSubscription = currentCameraService.ImageStream
             .ObserveOn(SynchronizationContext.Current!) // Application.Dispatcher.Invoke 와 동일한 효과
-            .Subscribe(mat =>
+            .Subscribe(
+            onNext: async mat =>
             {
                 if (mat.Empty())
                 {
                     PrintMat = null;
                     return;
                 }
-                ProcessImage(mat);
+                await ProcessImage(mat);
+            },
+            onError: (ex) => logger.ZLogError(ex, $"에러 발생. 구독 종료: {ex.Message}"),
+            onCompleted: () =>
+            {
+                logger.ZLogInformation($"구독 종료. 파이프 제거.");
+                faceMeshClient.DisconnectPipe();
             });
     }
 
-    private void ProcessImage(Mat mat)
+    private async Task ProcessImage(Mat mat)
     {
+        (int X, int Y)? point = await faceMeshClient.SendImageAndGetNoseAsync(mat);
         PrintMat = mat;
     }
 }

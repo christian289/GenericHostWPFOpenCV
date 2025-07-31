@@ -24,18 +24,21 @@ public partial class App : Application
             {
                 service.AddSingleton<MainWindowViewModel>();
                 service.AddSingleton<NormalViewModel>();
-                //service.AddSingleton<CannyViewModel>();
-                //service.AddSingleton<FindContour_MinAreaRectViewModel>();
-                //service.AddSingleton<FindContour_ApproxPolyDPViewModel>();
+                service.AddSingleton<DetectingNoseViewModel>();
+                service.AddSingleton<CannyViewModel>();
+                service.AddSingleton<FindContour_MinAreaRectViewModel>();
+                service.AddSingleton<FindContour_ApproxPolyDPViewModel>();
                 service.AddSingleton<FaceMeshClient>();
             })
             .Build();
+
         ServiceProvider = host.Services;
     }
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
         host.Start();
+
         MainWindow mainWindow = new()
         {
             DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>()

@@ -1,47 +1,47 @@
 ﻿using OpenCVFindContour.Clients;
+using OpenCVFindContour.Enums;
 using OpenCVFindContour.Services;
+using System.Windows;
 
 namespace OpenCVFindContour.ViewModel;
 
 public partial class MainWindowViewModel : ObservableRecipient
 {
     readonly ILogger<MainWindowViewModel> logger;
+    readonly FaceMeshClient faceMeshClient;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
-        NormalViewModel normalViewModel)
+        FaceMeshClient faceMeshClient,
+        NormalViewModel normalViewModel,
+        DetectingNoseViewModel detectingNoseViewModel,
+        CannyViewModel cannyViewModel,
+        FindContour_ApproxPolyDPViewModel findContour_ApproxPolyDPViewModel,
+        FindContour_MinAreaRectViewModel findContour_MinAreaRectViewModel)
     {
         IsActive = true;
 
         this.logger = logger;
+        this.faceMeshClient = faceMeshClient;
         NormalViewModel = normalViewModel;
+        DetectingNoseViewModel = detectingNoseViewModel;
+        CannyViewModel = cannyViewModel;
+        FindContour_ApproxPolyDPViewModel = findContour_ApproxPolyDPViewModel;
+        FindContour_MinAreaRectViewModel = findContour_MinAreaRectViewModel;
+
+        ResizeMode = $"{WindowResizeMode.CanResize}";
 
         Initialize();
     }
 
-    //public MainWindowViewModel(
-    //    ILogger<MainWindowViewModel> logger,
-    //    NormalViewModel normalViewModel,
-    //    CannyViewModel cannyViewModel,
-    //    FindContour_ApproxPolyDPViewModel findContour_ApproxPolyDPViewModel,
-    //    FindContour_MinAreaRectViewModel findContour_MinAreaRectViewModel)
-    //{
-    //    IsActive = true;
-
-    //    this.logger = logger;
-    //    this.faceMeshClient = faceMeshClient;
-    //    NormalViewModel = normalViewModel;
-    //    CannyViewModel = cannyViewModel;
-    //    FindContour_ApproxPolyDPViewModel = findContour_ApproxPolyDPViewModel;
-    //    FindContour_MinAreaRectViewModel = findContour_MinAreaRectViewModel;
-
-    //    Initialize();
-    //}
-
     public NormalViewModel NormalViewModel { get; init; }
-    //public CannyViewModel CannyViewModel { get; init; }
-    //public FindContour_ApproxPolyDPViewModel FindContour_ApproxPolyDPViewModel { get; init; }
-    //public FindContour_MinAreaRectViewModel FindContour_MinAreaRectViewModel { get; init; }
+    public DetectingNoseViewModel DetectingNoseViewModel { get; init; }
+    public CannyViewModel CannyViewModel { get; init; }
+    public FindContour_ApproxPolyDPViewModel FindContour_ApproxPolyDPViewModel { get; init; }
+    public FindContour_MinAreaRectViewModel FindContour_MinAreaRectViewModel { get; init; }
+
+    [ObservableProperty]
+    string _resizeMode;
 
     [ObservableProperty]
     ObservableCollection<ActivatedCameraHandleService>? _activatedCameraHandleCollection;
@@ -55,9 +55,21 @@ public partial class MainWindowViewModel : ObservableRecipient
     [NotifyCanExecuteChangedFor(nameof(CameraStartCommand))]
     bool _isCameraStartButtonEnabled;
 
+    partial void OnIsCameraStartButtonEnabledChanged(bool value)
+    {
+        if (value)
+        {
+            ResizeMode = $"{WindowResizeMode.CanResize}";
+            IsCameraStopButtonEnabled = false;
+        }
+        else
+        {
+            ResizeMode = $"{WindowResizeMode.NoResize}";
+            IsCameraStopButtonEnabled = true;
+        }   
+    }
+
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CameraStartCommand))]
-    [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
     bool _isCameraStopButtonEnabled;
 
     private void Initialize()
@@ -98,7 +110,9 @@ public partial class MainWindowViewModel : ObservableRecipient
     [RelayCommand(CanExecute = nameof(CanCameraStart))]
     public async Task CameraStart()
     {
-        foreach (var cameraHandleService in ActivatedCameraHandleCollection)
+        await KillPythonProcessesViaWmiAsync();
+
+        foreach (var cameraHandleService in ActivatedCameraHandleCollection!)
         {
             // 아래 옵션은 하드웨어 특징이 명확하지 않은 시점에서는 적용할 경우 resizing 등 오히려 성능 저하를 일으킨다.
             //cameraHandleService.InitializeCamera();
@@ -107,11 +121,11 @@ public partial class MainWindowViewModel : ObservableRecipient
         }   
 
         NormalViewModel.RefreshSubscription();
-        //CannyViewModel.RefreshSubscription();
-        //FindContour_ApproxPolyDPViewModel.RefreshSubscription();
-        //FindContour_MinAreaRectViewModel.RefreshSubscription();
+        await DetectingNoseViewModel.RefreshSubscription();
+        CannyViewModel.RefreshSubscription();
+        FindContour_ApproxPolyDPViewModel.RefreshSubscription();
+        FindContour_MinAreaRectViewModel.RefreshSubscription();
 
-        IsCameraStopButtonEnabled = true;
         IsCameraStartButtonEnabled = false;
     }
 
@@ -120,12 +134,44 @@ public partial class MainWindowViewModel : ObservableRecipient
     [RelayCommand(CanExecute = nameof(CanCameraStop))]
     public async Task CameraStop()
     {
-        foreach (var cameraHandleService in ActivatedCameraHandleCollection)
+        foreach (var cameraHandleService in ActivatedCameraHandleCollection!)
             await cameraHandleService.StopCaptureAsync();
 
-        IsCameraStopButtonEnabled = false;
         IsCameraStartButtonEnabled = true;
     }
 
     public bool CanCameraStop() => IsCameraStopButtonEnabled && !IsCameraStartButtonEnabled;
+
+    private static async Task KillPythonProcessesViaWmiAsync()
+    {
+        await Task.Run(() =>
+        {
+            using var searcher = new ManagementObjectSearcher(
+                "SELECT ProcessId, Name FROM Win32_Process WHERE Name LIKE '%python%'");
+
+            using var results = searcher.Get();
+
+            foreach (ManagementObject process in results.Cast<ManagementObject>())
+            {
+                try
+                {
+                    var processId = Convert.ToInt32(process["ProcessId"]);
+                    var processName = process["Name"].ToString();
+
+                    using var targetProcess = Process.GetProcessById(processId);
+                    targetProcess.Kill();
+
+                    Console.WriteLine($"WMI를 통해 종료됨: {processName} (PID: {processId})");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"WMI 프로세스 종료 실패: {ex.Message}");
+                }
+                finally
+                {
+                    process?.Dispose();
+                }
+            }
+        });
+    }
 }
