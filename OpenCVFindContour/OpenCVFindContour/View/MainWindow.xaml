@@ -28,8 +28,8 @@
                       VerticalContentAlignment="Center"
                       DisplayMemberPath="DisplayName"
                       IsEnabled="{Binding IsCameraStartButtonEnabled}"
-                      ItemsSource="{Binding ActivatedCameraHandleCollection}"
-                      SelectedItem="{Binding SelectedCameraHandleService}" />
+                      ItemsSource="{Binding CameraManager.ActivatedCameraHandleCollection}"
+                      SelectedItem="{Binding CameraManager.SelectedCameraHandleService}" />
         </StackPanel>
         <UniformGrid Grid.Row="1"
                      Columns="3"

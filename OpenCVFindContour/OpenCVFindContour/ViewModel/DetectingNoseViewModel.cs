@@ -1,5 +1,6 @@
 ﻿using OpenCVFindContour.Clients;
 using OpenCVFindContour.Effects;
+using OpenCVFindContour.Managers;
 using OpenCVFindContour.Services;
 
 namespace OpenCVFindContour.ViewModel;
@@ -31,7 +32,7 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
 
     public void Receive(PropertyChangedMessage<ActivatedCameraHandleService> message)
     {
-        if (message.PropertyName == nameof(MainWindowViewModel.SelectedCameraHandleService) && message.NewValue is not null)
+        if (message.PropertyName == nameof(CameraManager.SelectedCameraHandleService) && message.NewValue is not null)
         {
             currentSubscription?.Dispose();
             currentCameraService = message.NewValue;

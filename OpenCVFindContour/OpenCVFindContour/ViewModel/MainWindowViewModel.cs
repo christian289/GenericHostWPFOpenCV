@@ -1,7 +1,5 @@
-﻿using OpenCVFindContour.Clients;
-using OpenCVFindContour.Enums;
-using OpenCVFindContour.Services;
-using System.Windows;
+﻿using OpenCVFindContour.Enums;
+using OpenCVFindContour.Managers;
 
 namespace OpenCVFindContour.ViewModel;
 
@@ -11,6 +9,7 @@ public partial class MainWindowViewModel : ObservableRecipient
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
+        CameraManager cameraManager,
         NormalViewModel normalViewModel,
         DetectingNoseViewModel detectingNoseViewModel,
         CannyViewModel cannyViewModel,
@@ -20,6 +19,7 @@ public partial class MainWindowViewModel : ObservableRecipient
         IsActive = true;
 
         this.logger = logger;
+        CameraManager = cameraManager;
         NormalViewModel = normalViewModel;
         DetectingNoseViewModel = detectingNoseViewModel;
         CannyViewModel = cannyViewModel;
@@ -64,6 +64,7 @@ public partial class MainWindowViewModel : ObservableRecipient
         });
     }
 
+    public CameraManager CameraManager { get; init; }
     public NormalViewModel NormalViewModel { get; init; }
     public DetectingNoseViewModel DetectingNoseViewModel { get; init; }
     public CannyViewModel CannyViewModel { get; init; }
@@ -72,13 +73,6 @@ public partial class MainWindowViewModel : ObservableRecipient
 
     [ObservableProperty]
     string _resizeMode;
-
-    [ObservableProperty]
-    ObservableCollection<ActivatedCameraHandleService>? _activatedCameraHandleCollection;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedRecipients]
-    ActivatedCameraHandleService? _selectedCameraHandleService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
@@ -109,35 +103,7 @@ public partial class MainWindowViewModel : ObservableRecipient
 
     private void Initialize()
     {
-        int cameraCount = 10;
-        List<ActivatedCameraHandleService> cameraHandleServices = new(cameraCount);
-        for (int i = 0; i < cameraCount; i++)
-        {
-            #region Web Camera
-            var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
-
-            if (videoCapture.IsOpened())
-                cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture));
-            #endregion
-
-            #region Surface Pro 9
-            //var videoCapture = new VideoCapture(i, VideoCaptureAPIs.MSMF);
-
-            ////if (videoCapture.IsOpened())
-            //    cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture));
-            #endregion
-        }
-
-        ActivatedCameraHandleCollection = new ObservableCollection<ActivatedCameraHandleService>(cameraHandleServices);
-
-        if (ActivatedCameraHandleCollection.Count == 0)
-        {
-            logger.ZLogCritical($"No camera devices found.");
-            return;
-        }
-
-        SelectedCameraHandleService = ActivatedCameraHandleCollection.First();
-
+        CameraManager.SelectedCameraHandleService = CameraManager.ActivatedCameraHandleCollection!.First();
         IsCameraStartButtonEnabled = true;
         ApplyingEffect = false;
     }
@@ -146,14 +112,7 @@ public partial class MainWindowViewModel : ObservableRecipient
     public async Task CameraStart()
     {
         await KillPythonProcessesViaWmiAsync();
-
-        foreach (var cameraHandleService in ActivatedCameraHandleCollection!)
-        {
-            // 아래 옵션은 하드웨어 특징이 명확하지 않은 시점에서는 적용할 경우 resizing 등 오히려 성능 저하를 일으킨다.
-            //cameraHandleService.InitializeCamera();
-
-            await cameraHandleService.StartCaptureAsync();
-        }   
+        await CameraManager.CameraStartAsync();
 
         NormalViewModel.RefreshSubscription();
         await DetectingNoseViewModel.RefreshSubscription();
@@ -169,8 +128,7 @@ public partial class MainWindowViewModel : ObservableRecipient
     [RelayCommand(CanExecute = nameof(CanCameraStop))]
     public async Task CameraStop()
     {
-        foreach (var cameraHandleService in ActivatedCameraHandleCollection!)
-            await cameraHandleService.StopCaptureAsync();
+        await CameraManager.CameraStopAsync();
 
         IsCameraStartButtonEnabled = true;
         ApplyingEffect = false;

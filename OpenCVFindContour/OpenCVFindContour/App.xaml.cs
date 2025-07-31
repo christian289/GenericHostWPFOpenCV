@@ -1,5 +1,6 @@
 ﻿using OpenCVFindContour.Clients;
 using OpenCVFindContour.Effects;
+using OpenCVFindContour.Managers;
 using OpenCVFindContour.View;
 using OpenCVFindContour.ViewModel;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -24,6 +25,7 @@ public partial class App : Application
             })
             .ConfigureServices((context, service) =>
             {
+                service.AddSingleton<CameraManager>();
                 service.AddSingleton<MainWindowViewModel>();
                 service.AddSingleton<NormalViewModel>();
                 service.AddSingleton<DetectingNoseViewModel>();
