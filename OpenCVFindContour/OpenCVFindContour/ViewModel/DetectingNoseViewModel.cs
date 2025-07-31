@@ -1,7 +1,6 @@
 ﻿using OpenCVFindContour.Clients;
 using OpenCVFindContour.Effects;
 using OpenCVFindContour.Services;
-using static OpenCvSharp.ML.DTrees;
 
 namespace OpenCVFindContour.ViewModel;
 

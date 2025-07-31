@@ -174,6 +174,7 @@ public partial class MainWindowViewModel : ObservableRecipient
 
         IsCameraStartButtonEnabled = true;
         ApplyingEffect = false;
+        Messenger.Send(new PropertyChangedMessage<bool>(this, nameof(ApplyingEffect), !ApplyingEffect, ApplyingEffect));
     }
 
     public bool CanCameraStop() => IsCameraStopButtonEnabled && !IsCameraStartButtonEnabled;
@@ -186,6 +187,6 @@ public partial class MainWindowViewModel : ObservableRecipient
 
     public bool CanApplyEffect()
     {
-        return !IsCameraStartButtonEnabled && !ApplyingEffect;
+        return !IsCameraStartButtonEnabled;
     }
 }
