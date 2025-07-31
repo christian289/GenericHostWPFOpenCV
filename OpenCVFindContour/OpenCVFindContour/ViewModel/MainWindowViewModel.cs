@@ -8,41 +8,35 @@ public partial class MainWindowViewModel : ObservableRecipient
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
-        CannyViewModel cannyViewModel,
-        FindContour_ApproxPolyDPViewModel findContour_ApproxPolyDPViewModel,
-        FindContour_MinAreaRectViewModel findContour_MinAreaRectViewModel)
+        NormalViewModel normalViewModel)
     {
         IsActive = true;
 
         this.logger = logger;
-        CannyViewModel = cannyViewModel;
-        FindContour_ApproxPolyDPViewModel = findContour_ApproxPolyDPViewModel;
-        FindContour_MinAreaRectViewModel = findContour_MinAreaRectViewModel;
+        NormalViewModel = normalViewModel;
 
-        int cameraCount = 10;
-        List<ActivatedCameraHandleService> cameraHandleServices = new(cameraCount);
-        for (int i = 0; i < cameraCount; i++)
-        {
-            //var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
-            var videoCapture = new VideoCapture(i, VideoCaptureAPIs.MSMF); 
-            if (videoCapture.IsOpened())
-                cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture, 30));
-        }
-
-        ActivatedCameraHandleCollection = new ObservableCollection<ActivatedCameraHandleService>(cameraHandleServices);
-
-        if (ActivatedCameraHandleCollection.Count == 0)
-        {
-            logger.ZLogCritical($"No camera devices found.");
-            return;
-        }
-
-        SelectedCameraHandleService = ActivatedCameraHandleCollection.First();
-
-        IsCameraStartButtonEnabled = true;
-        IsCameraStopButtonEnabled = false;
+        Initialize();
     }
 
+    //public MainWindowViewModel(
+    //    ILogger<MainWindowViewModel> logger,
+    //    NormalViewModel normalViewModel,
+    //    CannyViewModel cannyViewModel,
+    //    FindContour_ApproxPolyDPViewModel findContour_ApproxPolyDPViewModel,
+    //    FindContour_MinAreaRectViewModel findContour_MinAreaRectViewModel)
+    //{
+    //    IsActive = true;
+
+    //    this.logger = logger;
+    //    NormalViewModel = normalViewModel;
+    //    CannyViewModel = cannyViewModel;
+    //    FindContour_ApproxPolyDPViewModel = findContour_ApproxPolyDPViewModel;
+    //    FindContour_MinAreaRectViewModel = findContour_MinAreaRectViewModel;
+
+    //    Initialize();
+    //}
+
+    public NormalViewModel NormalViewModel { get; init; }
     public CannyViewModel CannyViewModel { get; init; }
     public FindContour_ApproxPolyDPViewModel FindContour_ApproxPolyDPViewModel { get; init; }
     public FindContour_MinAreaRectViewModel FindContour_MinAreaRectViewModel { get; init; }
@@ -53,6 +47,12 @@ public partial class MainWindowViewModel : ObservableRecipient
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
     ActivatedCameraHandleService _selectedCameraHandleService;
+
+    [ObservableProperty]
+    double _normalViewActualHeight;
+
+    [ObservableProperty]
+    double _normalViewActualWidth;
 
     [ObservableProperty]
     double _cannyViewActualHeight;
@@ -82,18 +82,56 @@ public partial class MainWindowViewModel : ObservableRecipient
     [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
     bool _isCameraStopButtonEnabled;
 
+    private void Initialize()
+    {
+        int cameraCount = 10;
+        List<ActivatedCameraHandleService> cameraHandleServices = new(cameraCount);
+        for (int i = 0; i < cameraCount; i++)
+        {
+            #region Web Camera
+            var videoCapture = new VideoCapture(i, VideoCaptureAPIs.DSHOW);
+
+            if (videoCapture.IsOpened())
+                cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture));
+            #endregion
+
+            #region Surface Pro 9
+            //var videoCapture = new VideoCapture(i, VideoCaptureAPIs.MSMF);
+
+            ////if (videoCapture.IsOpened())
+            //    cameraHandleServices.Add(new ActivatedCameraHandleService(logger, i, videoCapture));
+            #endregion
+        }
+
+        ActivatedCameraHandleCollection = new ObservableCollection<ActivatedCameraHandleService>(cameraHandleServices);
+
+        if (ActivatedCameraHandleCollection.Count == 0)
+        {
+            logger.ZLogCritical($"No camera devices found.");
+            return;
+        }
+
+        SelectedCameraHandleService = ActivatedCameraHandleCollection.First();
+
+        IsCameraStartButtonEnabled = true;
+        IsCameraStopButtonEnabled = false;
+    }
+
     [RelayCommand(CanExecute = nameof(CanCameraStart))]
     public async Task CameraStart()
     {
         foreach (var cameraHandleService in ActivatedCameraHandleCollection)
         {
-            cameraHandleService.InitializeCamera();
+            // 아래 옵션은 하드웨어 특징이 명확하지 않은 시점에서는 적용할 경우 resizing 등 오히려 성능 저하를 일으킨다.
+            //cameraHandleService.InitializeCamera();
+
             await cameraHandleService.StartCaptureAsync();
         }   
 
-        CannyViewModel.RefreshSubscription();
-        FindContour_ApproxPolyDPViewModel.RefreshSubscription();
-        FindContour_MinAreaRectViewModel.RefreshSubscription();
+        NormalViewModel.RefreshSubscription();
+        //CannyViewModel.RefreshSubscription();
+        //FindContour_ApproxPolyDPViewModel.RefreshSubscription();
+        //FindContour_MinAreaRectViewModel.RefreshSubscription();
 
         IsCameraStopButtonEnabled = true;
         IsCameraStartButtonEnabled = false;

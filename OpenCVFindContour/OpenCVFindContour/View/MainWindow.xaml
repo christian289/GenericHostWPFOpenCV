@@ -31,7 +31,15 @@
                       ItemsSource="{Binding ActivatedCameraHandleCollection}"
                       SelectedItem="{Binding SelectedCameraHandleService}" />
         </StackPanel>
-        <UniformGrid Grid.Row="1" Columns="3">
+        <Grid Grid.Row="1">
+            <local:Normal DataContext="{Binding NormalViewModel}">
+                <i:Interaction.Behaviors>
+                    <beha:GetActualHeightBehavior ActualHeight="{Binding NormalViewActualHeight, Mode=OneWayToSource}" />
+                    <beha:GetActualWidthBehavior ActualWidth="{Binding NormalViewActualWidth, Mode=OneWayToSource}" />
+                </i:Interaction.Behaviors>
+            </local:Normal>
+        </Grid>
+        <!--<UniformGrid Grid.Row="1" Columns="3">
             <local:Canny DataContext="{Binding CannyViewModel}">
                 <i:Interaction.Behaviors>
                     <beha:GetActualHeightBehavior ActualHeight="{Binding CannyViewActualHeight, Mode=OneWayToSource}" />
@@ -50,7 +58,7 @@
                     <beha:GetActualWidthBehavior ActualWidth="{Binding MinAreaRectViewActualWidth, Mode=OneWayToSource}" />
                 </i:Interaction.Behaviors>
             </local:FindContour_MinAreaRect>
-        </UniformGrid>
+        </UniformGrid>-->
         <UniformGrid Grid.Row="2" Columns="2">
             <RadioButton Command="{Binding CameraStartCommand}"
                          Content="카메라 연결 시작"

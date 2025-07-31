@@ -22,6 +22,7 @@ public partial class App : Application
             .ConfigureServices((context, service) =>
             {
                 service.AddSingleton<MainWindowViewModel>();
+                service.AddSingleton<NormalViewModel>();
                 service.AddSingleton<CannyViewModel>();
                 service.AddSingleton<FindContour_MinAreaRectViewModel>();
                 service.AddSingleton<FindContour_ApproxPolyDPViewModel>();

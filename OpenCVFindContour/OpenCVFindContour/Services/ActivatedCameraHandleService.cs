@@ -14,13 +14,11 @@ public sealed class ActivatedCameraHandleService : IDisposable
     public ActivatedCameraHandleService(
         ILogger logger,
         int cameraIndex,
-        VideoCapture videoCapture,
-        int fps = 30)
+        VideoCapture videoCapture)
     {
         this.logger = logger;
         CameraIndex = cameraIndex;
         _videoCapture = videoCapture ?? throw new ArgumentNullException(nameof(videoCapture));
-        Fps = Math.Max(1, Math.Min(fps, 120)); // FPS 범위 제한
 
         _imageSubject = new Subject<Mat>();
         _captureSemaphore = new SemaphoreSlim(1, 1);
@@ -28,17 +26,16 @@ public sealed class ActivatedCameraHandleService : IDisposable
 
     public string DisplayName => $"Camera {CameraIndex}";
     public int CameraIndex { get; }
-    public int Fps { get; }
     public bool IsCapturing => _isCapturing && !_isDisposed;
     public IObservable<Mat> ImageStream => _imageSubject.AsObservable();
 
-    public void InitializeCamera(int renderWidth = 1920, int renderHeight = 1080)
+    public void InitializeCamera(int renderWidth = 1920, int renderHeight = 1080, int fps = 30)
     {
         try
         {
             _videoCapture.Set(VideoCaptureProperties.FrameWidth, renderWidth);
             _videoCapture.Set(VideoCaptureProperties.FrameHeight, renderHeight);
-            _videoCapture.Set(VideoCaptureProperties.Fps, Fps);
+            _videoCapture.Set(VideoCaptureProperties.Fps, fps); // FPS 설정
             _videoCapture.Set(VideoCaptureProperties.ConvertRgb, 0); // 불필요한 색상 변환을 방지
         }
         catch (Exception ex)
@@ -116,11 +113,25 @@ public sealed class ActivatedCameraHandleService : IDisposable
             _isCapturing = true;
             _cancellationTokenSource = new CancellationTokenSource();
             _captureSubscription?.Dispose();
+            //_captureSubscription = Observable
+            //    .Interval(TimeSpan.FromMilliseconds(1000.0 / 60), TaskPoolScheduler.Default)
+            //    .TakeWhile(_ => !_cancellationTokenSource.Token.IsCancellationRequested)
+            //    .SelectMany(_ => Observable.FromAsync(CaptureFrameAsync))
+            //    .Where(mat => mat != null && !mat.Empty())
+            //    .Subscribe(
+            //        onNext: mat =>
+            //        {
+            //            if (!_isDisposed && mat is not null)
+            //                _imageSubject.OnNext(mat);
+            //        },
+            //        onError: HandleCaptureError,
+            //        onCompleted: () => _imageSubject.OnCompleted()
+            //    );
             _captureSubscription = Observable
-                .Interval(TimeSpan.FromMilliseconds(1000.0 / Fps), TaskPoolScheduler.Default)
-                .TakeWhile(_ => !_cancellationTokenSource.Token.IsCancellationRequested)
-                .SelectMany(_ => Observable.FromAsync(CaptureFrameAsync))
-                .Where(mat => mat != null && !mat.Empty())
+                .Defer(() => Observable.FromAsync(CaptureFrameAsync))
+                .Repeat()
+                .TakeUntil(_ => _cancellationTokenSource.Token.IsCancellationRequested)
+                .Where(mat => mat is not null && !mat.Empty())
                 .Subscribe(
                     onNext: mat =>
                     {
