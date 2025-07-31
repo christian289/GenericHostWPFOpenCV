@@ -26,3 +26,7 @@ global using System.Windows.Markup;
 global using System.Windows.Media;
 global using System.Windows.Media.Imaging;
 global using ZLogger;
+global using System.IO;
+global using System.IO.Pipes;
+global using System.Text;
+global using System.Text.Json;

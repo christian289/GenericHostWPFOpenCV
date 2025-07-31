@@ -33,10 +33,10 @@
         </StackPanel>
         <Grid Grid.Row="1">
             <local:Normal DataContext="{Binding NormalViewModel}">
-                <i:Interaction.Behaviors>
+                <!--<i:Interaction.Behaviors>
                     <beha:GetActualHeightBehavior ActualHeight="{Binding NormalViewActualHeight, Mode=OneWayToSource}" />
                     <beha:GetActualWidthBehavior ActualWidth="{Binding NormalViewActualWidth, Mode=OneWayToSource}" />
-                </i:Interaction.Behaviors>
+                </i:Interaction.Behaviors>-->
             </local:Normal>
         </Grid>
         <!--<UniformGrid Grid.Row="1" Columns="3">

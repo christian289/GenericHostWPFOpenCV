@@ -1,4 +1,5 @@
-﻿using OpenCVFindContour.View;
+﻿using OpenCVFindContour.Clients;
+using OpenCVFindContour.View;
 using OpenCVFindContour.ViewModel;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -23,9 +24,10 @@ public partial class App : Application
             {
                 service.AddSingleton<MainWindowViewModel>();
                 service.AddSingleton<NormalViewModel>();
-                service.AddSingleton<CannyViewModel>();
-                service.AddSingleton<FindContour_MinAreaRectViewModel>();
-                service.AddSingleton<FindContour_ApproxPolyDPViewModel>();
+                //service.AddSingleton<CannyViewModel>();
+                //service.AddSingleton<FindContour_MinAreaRectViewModel>();
+                //service.AddSingleton<FindContour_ApproxPolyDPViewModel>();
+                service.AddSingleton<FaceMeshClient>();
             })
             .Build();
         ServiceProvider = host.Services;

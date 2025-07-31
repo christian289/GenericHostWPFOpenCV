@@ -1,4 +1,5 @@
-﻿using OpenCVFindContour.Services;
+﻿using OpenCVFindContour.Clients;
+using OpenCVFindContour.Services;
 
 namespace OpenCVFindContour.ViewModel;
 
@@ -28,6 +29,7 @@ public partial class MainWindowViewModel : ObservableRecipient
     //    IsActive = true;
 
     //    this.logger = logger;
+    //    this.faceMeshClient = faceMeshClient;
     //    NormalViewModel = normalViewModel;
     //    CannyViewModel = cannyViewModel;
     //    FindContour_ApproxPolyDPViewModel = findContour_ApproxPolyDPViewModel;
@@ -37,40 +39,16 @@ public partial class MainWindowViewModel : ObservableRecipient
     //}
 
     public NormalViewModel NormalViewModel { get; init; }
-    public CannyViewModel CannyViewModel { get; init; }
-    public FindContour_ApproxPolyDPViewModel FindContour_ApproxPolyDPViewModel { get; init; }
-    public FindContour_MinAreaRectViewModel FindContour_MinAreaRectViewModel { get; init; }
+    //public CannyViewModel CannyViewModel { get; init; }
+    //public FindContour_ApproxPolyDPViewModel FindContour_ApproxPolyDPViewModel { get; init; }
+    //public FindContour_MinAreaRectViewModel FindContour_MinAreaRectViewModel { get; init; }
 
     [ObservableProperty]
-    ObservableCollection<ActivatedCameraHandleService> _activatedCameraHandleCollection;
+    ObservableCollection<ActivatedCameraHandleService>? _activatedCameraHandleCollection;
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
-    ActivatedCameraHandleService _selectedCameraHandleService;
-
-    [ObservableProperty]
-    double _normalViewActualHeight;
-
-    [ObservableProperty]
-    double _normalViewActualWidth;
-
-    [ObservableProperty]
-    double _cannyViewActualHeight;
-
-    [ObservableProperty]
-    double _cannyViewActualWidth;
-
-    [ObservableProperty]
-    double _approxPolyDPViewActualHeight;
-
-    [ObservableProperty]
-    double _approxPolyDPViewActualWidth;
-
-    [ObservableProperty]
-    double _minAreaRectActualHeight;
-
-    [ObservableProperty]
-    double _minAreaRectActualWidth;
+    ActivatedCameraHandleService? _selectedCameraHandleService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
