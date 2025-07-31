@@ -92,7 +92,7 @@ public partial class MainWindowViewModel : ObservableRecipient
         {
             ResizeMode = $"{WindowResizeMode.NoResize}";
             IsCameraStopButtonEnabled = true;
-        }   
+        }
     }
 
     [ObservableProperty]

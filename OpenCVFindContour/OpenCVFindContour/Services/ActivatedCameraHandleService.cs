@@ -1,6 +1,4 @@
-﻿using System.Reactive;
-
-namespace OpenCVFindContour.Services;
+﻿namespace OpenCVFindContour.Services;
 
 public sealed class ActivatedCameraHandleService : IDisposable
 {

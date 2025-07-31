@@ -64,7 +64,7 @@ public partial class FindContour_MinAreaRectViewModel : ObservableRecipient, IRe
             Cv2.CvtColor(copy_mat, grayscale, ColorConversionCodes.BGR2GRAY);
         else // 1 채널일 경우
             Cv2.CvtColor(copy_mat, grayscale, ColorConversionCodes.GRAY2BGR);
-        
+
         Mat canny = new();
         Cv2.Canny(
             src: grayscale,

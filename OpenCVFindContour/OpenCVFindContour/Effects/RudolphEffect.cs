@@ -10,7 +10,7 @@ public sealed class RudolphEffect
             return mat;
 
         Cv2.Circle(mat, new Point(nosePointX, nosePointY), 30, new Scalar(0, 0, 255), -1);
-        
+
         return mat;
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace OpenCVFindContour.Clients;
+﻿namespace OpenCVFindContour.Clients;
 
 public sealed class FaceMeshClient
 {
@@ -131,7 +129,7 @@ public sealed class FaceMeshClient
             {
                 var doc = JsonDocument.Parse(resultJson);
                 var root = doc.RootElement;
-                
+
                 if (root.ValueKind != JsonValueKind.Array)
                     return [];
 
