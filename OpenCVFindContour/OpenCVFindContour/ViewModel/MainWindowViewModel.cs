@@ -8,11 +8,9 @@ namespace OpenCVFindContour.ViewModel;
 public partial class MainWindowViewModel : ObservableRecipient
 {
     readonly ILogger<MainWindowViewModel> logger;
-    readonly FaceMeshClient faceMeshClient;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
-        FaceMeshClient faceMeshClient,
         NormalViewModel normalViewModel,
         DetectingNoseViewModel detectingNoseViewModel,
         CannyViewModel cannyViewModel,
@@ -22,7 +20,6 @@ public partial class MainWindowViewModel : ObservableRecipient
         IsActive = true;
 
         this.logger = logger;
-        this.faceMeshClient = faceMeshClient;
         NormalViewModel = normalViewModel;
         DetectingNoseViewModel = detectingNoseViewModel;
         CannyViewModel = cannyViewModel;
@@ -32,6 +29,39 @@ public partial class MainWindowViewModel : ObservableRecipient
         ResizeMode = $"{WindowResizeMode.CanResize}";
 
         Initialize();
+    }
+
+    private static async Task KillPythonProcessesViaWmiAsync()
+    {
+        await Task.Run(() =>
+        {
+            using var searcher = new ManagementObjectSearcher(
+                "SELECT ProcessId, Name FROM Win32_Process WHERE Name LIKE '%python%'");
+
+            using var results = searcher.Get();
+
+            foreach (ManagementObject process in results.Cast<ManagementObject>())
+            {
+                try
+                {
+                    var processId = Convert.ToInt32(process["ProcessId"]);
+                    var processName = process["Name"].ToString();
+
+                    using var targetProcess = Process.GetProcessById(processId);
+                    targetProcess.Kill();
+
+                    Console.WriteLine($"WMI를 통해 종료됨: {processName} (PID: {processId})");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"WMI 프로세스 종료 실패: {ex.Message}");
+                }
+                finally
+                {
+                    process?.Dispose();
+                }
+            }
+        });
     }
 
     public NormalViewModel NormalViewModel { get; init; }
@@ -53,6 +83,7 @@ public partial class MainWindowViewModel : ObservableRecipient
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CameraStopCommand))]
     [NotifyCanExecuteChangedFor(nameof(CameraStartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ApplyEffectCommand))]
     bool _isCameraStartButtonEnabled;
 
     partial void OnIsCameraStartButtonEnabledChanged(bool value)
@@ -61,6 +92,7 @@ public partial class MainWindowViewModel : ObservableRecipient
         {
             ResizeMode = $"{WindowResizeMode.CanResize}";
             IsCameraStopButtonEnabled = false;
+            ApplyingEffect = false;
         }
         else
         {
@@ -71,6 +103,9 @@ public partial class MainWindowViewModel : ObservableRecipient
 
     [ObservableProperty]
     bool _isCameraStopButtonEnabled;
+
+    [ObservableProperty]
+    bool _applyingEffect;
 
     private void Initialize()
     {
@@ -104,7 +139,7 @@ public partial class MainWindowViewModel : ObservableRecipient
         SelectedCameraHandleService = ActivatedCameraHandleCollection.First();
 
         IsCameraStartButtonEnabled = true;
-        IsCameraStopButtonEnabled = false;
+        ApplyingEffect = false;
     }
 
     [RelayCommand(CanExecute = nameof(CanCameraStart))]
@@ -138,40 +173,19 @@ public partial class MainWindowViewModel : ObservableRecipient
             await cameraHandleService.StopCaptureAsync();
 
         IsCameraStartButtonEnabled = true;
+        ApplyingEffect = false;
     }
 
     public bool CanCameraStop() => IsCameraStopButtonEnabled && !IsCameraStartButtonEnabled;
 
-    private static async Task KillPythonProcessesViaWmiAsync()
+    [RelayCommand(CanExecute = nameof(CanApplyEffect))]
+    public void ApplyEffect()
     {
-        await Task.Run(() =>
-        {
-            using var searcher = new ManagementObjectSearcher(
-                "SELECT ProcessId, Name FROM Win32_Process WHERE Name LIKE '%python%'");
+        Messenger.Send(new PropertyChangedMessage<bool>(this, nameof(ApplyingEffect), !ApplyingEffect, ApplyingEffect));
+    }
 
-            using var results = searcher.Get();
-
-            foreach (ManagementObject process in results.Cast<ManagementObject>())
-            {
-                try
-                {
-                    var processId = Convert.ToInt32(process["ProcessId"]);
-                    var processName = process["Name"].ToString();
-
-                    using var targetProcess = Process.GetProcessById(processId);
-                    targetProcess.Kill();
-
-                    Console.WriteLine($"WMI를 통해 종료됨: {processName} (PID: {processId})");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"WMI 프로세스 종료 실패: {ex.Message}");
-                }
-                finally
-                {
-                    process?.Dispose();
-                }
-            }
-        });
+    public bool CanApplyEffect()
+    {
+        return !IsCameraStartButtonEnabled && !ApplyingEffect;
     }
 }

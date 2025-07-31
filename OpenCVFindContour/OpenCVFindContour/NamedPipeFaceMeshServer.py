@@ -8,16 +8,24 @@ PIPE_NAME = r'\\.\pipe\FaceMeshPipe'
 
 # MediaPipe 초기화
 mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1)
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5) # 최대 5명(값이 더 커질 경우 처리속도 감소. 혹시 필요하다면 서버를 늘릴 것)
 
-def find_nose(img):
+def find_noses(img):
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = face_mesh.process(img_rgb)
     if not result.multi_face_landmarks:
-        return None
+        return []
+
     h, w, _ = img.shape
-    nose_landmark = result.multi_face_landmarks[0].landmark[1]
-    return {"x": int(nose_landmark.x * w), "y": int(nose_landmark.y * h)}
+    noses = []
+    for face_landmarks in result.multi_face_landmarks:
+        nose = face_landmarks.landmark[1]  # 1번은 코끝
+        noses.append({
+            "x": int(nose.x * w),
+            "y": int(nose.y * h)
+        })
+
+    return noses
 
 def read_exact(pipe, size, timeout_sec=5.0):
     data = b''
@@ -49,20 +57,21 @@ def handle_client(pipe):
 
             nparr = np.frombuffer(img_buf, np.uint8)
             img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
             if img is None:
                 print("[⚠️ 경고] 이미지 디코딩 실패")
                 result_json = json.dumps({}).encode('utf-8')
             else:
-                nose = find_nose(img)
-                result_json = json.dumps(nose if nose else {}).encode('utf-8')
+                noses = find_noses(img)
+                result_json = json.dumps(noses).encode('utf-8')
 
             result_len = struct.pack('<I', len(result_json))
+
             try:
                 win32file.WriteFile(pipe, result_len + result_json)
             except pywintypes.error as e:
                 print(f"[❌ Write 실패] {e}")
                 break
-
     finally:
         try:
             win32file.CloseHandle(pipe)

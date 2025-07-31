@@ -24,12 +24,30 @@ public sealed class FaceMeshClient
                 Arguments = $"\"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NamedPipeFaceMeshServer.py")}\"",
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                RedirectStandardError = false,
-                RedirectStandardOutput = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
                 WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                EnvironmentVariables =
+                {
+                    ["PYTHONIOENCODING"] = "utf-8",
+                    ["PYTHONUNBUFFERED"] = "1",
+                }
             }
         };
         _pythonProcess.Start();
+        _pythonProcess.OutputDataReceived += (sender, args) =>
+        {
+            if (!string.IsNullOrWhiteSpace(args.Data))
+                Console.WriteLine($"[PYTHON STDOUT] {args.Data}");
+        };
+
+        _pythonProcess.ErrorDataReceived += (sender, args) =>
+        {
+            if (!string.IsNullOrWhiteSpace(args.Data))
+                Console.WriteLine($"[PYTHON STDERR] {args.Data}");
+        };
+        _pythonProcess.BeginErrorReadLine();
+        _pythonProcess.BeginOutputReadLine();
         logger.ZLogInformation($"파이썬 서버 시작 (PID: {_pythonProcess.Id})");
     }
 
@@ -71,16 +89,16 @@ public sealed class FaceMeshClient
         }
     }
 
-    public async Task<(int X, int Y)?> SendImageAndGetNoseAsync(Mat frame)
+    public async Task<IReadOnlyCollection<(int X, int Y)>?> SendImageAndGetNoseAsync(Mat frame)
     {
         if (_pipeClient == null || !_pipeClient.IsConnected)
-            return null;
+            return [];
 
         try
         {
             Cv2.ImEncode(".jpg", frame, out var jpegBytes);
             if (jpegBytes == null || jpegBytes.Length == 0)
-                return null;
+                return [];
 
             byte[] lengthBytes = BitConverter.GetBytes(jpegBytes.Length);
             await _pipeClient.WriteAsync(lengthBytes.AsMemory(0, 4));
@@ -88,51 +106,76 @@ public sealed class FaceMeshClient
             await _pipeClient.FlushAsync();
 
             byte[] lenBuf = ArrayPool<byte>.Shared.Rent(4);
-            int readLen = await _pipeClient.ReadAsync(lenBuf.AsMemory(0, 4));
-            if (readLen != 4)
-                throw new IOException("응답 길이 수신 실패");
+            await ReadExactAsync(_pipeClient, lenBuf, 4);
+            //await _pipeClient.ReadExactlyAsync(lenBuf.AsMemory(0, 4)); // 에러 발생함.
+            int resultLength = BitConverter.ToInt32(lenBuf.AsSpan());
+            ArrayPool<byte>.Shared.Return(lenBuf);
 
-            int resultLength = BitConverter.ToInt32(lenBuf, 0);
-            byte[] resultBuf = ArrayPool<byte>.Shared.Rent(resultLength);
-            int totalRead = 0;
-
-            while (totalRead < resultLength)
+            logger.ZLogDebug($"json length: {resultLength}");
+            if (resultLength <= 0 || resultLength > 100_000) // 비정상 값 필터링
             {
-                int n = await _pipeClient.ReadAsync(resultBuf.AsMemory(totalRead, resultLength - totalRead));
-                if (n == 0)
-                    throw new IOException("응답 데이터 부족");
-                totalRead += n;
+                logger.ZLogError($"[🚨 경고] 수신된 JSON 길이가 비정상: {resultLength}");
+                return [];
             }
 
+            byte[] resultBuf = ArrayPool<byte>.Shared.Rent(resultLength);
+            //await _pipeClient.ReadExactlyAsync(resultBuf); // 에러 발생함.
+            await ReadExactAsync(_pipeClient, resultBuf, resultLength);
+
             var resultJson = Encoding.UTF8.GetString(resultBuf, 0, resultLength);
+            ArrayPool<byte>.Shared.Return(resultBuf);
+            logger.ZLogDebug($"파이프 응답: {resultJson}");
+            //return [];
 
             try
             {
                 var doc = JsonDocument.Parse(resultJson);
                 var root = doc.RootElement;
+                
+                if (root.ValueKind != JsonValueKind.Array)
+                    return [];
 
-                if (!root.TryGetProperty("x", out var xProp) ||
-                    !root.TryGetProperty("y", out var yProp))
+                List<(int X, int Y)> noseList = new(root.EnumerateArray().Count());
+                foreach (var item in root.EnumerateArray())
                 {
-                    logger.ZLogWarning($"캐치 불가능");
-                    return null;
+                    if (item.TryGetProperty("x", out var xProp) &&
+                        item.TryGetProperty("y", out var yProp))
+                    {
+                        int x = xProp.GetInt32();
+                        int y = yProp.GetInt32();
+                        noseList.Add((x, y));
+                        logger.ZLogDebug($"X:{x}, Y:{y}");
+                    }
+                    else
+                    {
+                        logger.ZLogWarning($"캐치 불가능");
+                    }
                 }
 
-                int x = xProp.GetInt32();
-                int y = yProp.GetInt32();
-                logger.ZLogInformation($"X:{x}, Y:{y}");
-                return (x, y);
+                return noseList.AsReadOnly();
             }
             catch (JsonException ex)
             {
                 logger.ZLogError(ex, $"[JSON 파싱 실패] 원본: {resultJson}");
-                return null;
+                return [];
             }
         }
         catch (Exception ex)
         {
             logger.ZLogError(ex, $"파이프 통신 중 예외 발생");
-            return null;
+            return [];
+        }
+    }
+
+    private async Task ReadExactAsync(Stream stream, byte[] buffer, int count)
+    {
+        int offset = 0;
+        while (offset < count)
+        {
+            int n = await stream.ReadAsync(buffer.AsMemory(offset, count - offset));
+            if (n == 0)
+                throw new IOException("파이프 스트림이 끊어졌거나 상대가 종료됨");
+            offset += n;
         }
     }
 }

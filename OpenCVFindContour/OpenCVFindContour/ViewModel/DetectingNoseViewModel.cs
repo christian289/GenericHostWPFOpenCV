@@ -1,23 +1,30 @@
-﻿using Microsoft.Extensions.Logging;
-using OpenCVFindContour.Clients;
+﻿using OpenCVFindContour.Clients;
+using OpenCVFindContour.Effects;
 using OpenCVFindContour.Services;
+using static OpenCvSharp.ML.DTrees;
 
 namespace OpenCVFindContour.ViewModel;
 
-public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<ActivatedCameraHandleService>>
+public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<ActivatedCameraHandleService>>, IRecipient<PropertyChangedMessage<bool>>
 {
     private readonly ILogger<DetectingNoseViewModel> logger;
     private readonly FaceMeshClient faceMeshClient;
+    private readonly RudolphEffect rudolphEffect;
     IDisposable? currentSubscription;
     ActivatedCameraHandleService? currentCameraService;
+    bool _applyingEffect;
 
     public DetectingNoseViewModel(
         ILogger<DetectingNoseViewModel> logger,
-        FaceMeshClient faceMeshClient)
+        FaceMeshClient faceMeshClient,
+        RudolphEffect rudolphEffect)
     {
         IsActive = true;
         this.logger = logger;
         this.faceMeshClient = faceMeshClient;
+        this.rudolphEffect = rudolphEffect;
+
+        _applyingEffect = false;
     }
 
     [ObservableProperty]
@@ -30,6 +37,15 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
             currentSubscription?.Dispose();
             currentCameraService = message.NewValue;
             MakeSubscription(currentCameraService);
+        }
+    }
+
+    public void Receive(PropertyChangedMessage<bool> message)
+    {
+        if (message.Sender is MainWindowViewModel &&
+            message.PropertyName == nameof(MainWindowViewModel.ApplyingEffect))
+        {
+            _applyingEffect = message.NewValue;
         }
     }
 
@@ -51,27 +67,33 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
         currentCameraService = service;
         currentSubscription = currentCameraService.ImageStream
             .ObserveOn(SynchronizationContext.Current!) // Application.Dispatcher.Invoke 와 동일한 효과
+            .Where(mat => mat is not null && !mat.Empty())
             .Subscribe(
-            onNext: async mat =>
-            {
-                if (mat.Empty())
+                onNext: async (mat) =>
                 {
-                    PrintMat = null;
-                    return;
-                }
-                await ProcessImage(mat);
-            },
-            onError: (ex) => logger.ZLogError(ex, $"에러 발생. 구독 종료: {ex.Message}"),
-            onCompleted: () =>
-            {
-                logger.ZLogInformation($"구독 종료. 파이프 제거.");
-                faceMeshClient.DisconnectPipe();
-            });
+                    await ProcessImage(mat);
+                },
+                onError: (ex) =>
+                {
+                    logger.ZLogError(ex, $"에러 발생. 구독 종료: {ex.Message}");
+                },
+                onCompleted: () =>
+                {
+                    logger.ZLogInformation($"구독 종료. 파이프 제거.");
+                    faceMeshClient.DisconnectPipe();
+                });
     }
 
     private async Task ProcessImage(Mat mat)
     {
-        (int X, int Y)? point = await faceMeshClient.SendImageAndGetNoseAsync(mat);
+        IReadOnlyCollection<(int X, int Y)>? points = await faceMeshClient.SendImageAndGetNoseAsync(mat);
+
+        if (_applyingEffect && points is not null)
+        {
+            foreach (var (X, Y) in points)
+                mat = rudolphEffect.ProcesingImage(mat, X, Y);
+        }
+
         PrintMat = mat;
     }
 }

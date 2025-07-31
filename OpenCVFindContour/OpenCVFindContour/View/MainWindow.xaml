@@ -40,7 +40,7 @@
             <local:FindContour_ApproxPolyDP DataContext="{Binding FindContour_ApproxPolyDPViewModel}" />
             <local:FindContour_MinAreaRect DataContext="{Binding FindContour_MinAreaRectViewModel}" />
         </UniformGrid>
-        <UniformGrid Grid.Row="2" Columns="2">
+        <UniformGrid Grid.Row="2" Columns="3">
             <RadioButton Command="{Binding CameraStartCommand}"
                          Content="카메라 연결 시작"
                          GroupName="CameraControl"
@@ -52,6 +52,9 @@
                          GroupName="CameraControl"
                          IsChecked="{Binding IsCameraStopButtonEnabled, Mode=TwoWay}"
                          Style="{StaticResource ButtonLikeRadioButton}" />
+            <ToggleButton Command="{Binding ApplyEffectCommand}"
+                          Content="효과 적용"
+                          IsChecked="{Binding ApplyingEffect, Mode=TwoWay}" />
         </UniformGrid>
     </Grid>
 </Window>

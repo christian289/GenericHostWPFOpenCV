@@ -1,4 +1,5 @@
 ﻿using OpenCVFindContour.Clients;
+using OpenCVFindContour.Effects;
 using OpenCVFindContour.View;
 using OpenCVFindContour.ViewModel;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -18,7 +19,8 @@ public partial class App : Application
                 logging.ClearProviders();
                 logging.AddZLoggerConsole();
                 //logging.AddDebug();
-                logging.SetMinimumLevel(LogLevel.Information);
+                //logging.SetMinimumLevel(LogLevel.Information);
+                logging.SetMinimumLevel(LogLevel.Debug);
             })
             .ConfigureServices((context, service) =>
             {
@@ -29,6 +31,7 @@ public partial class App : Application
                 service.AddSingleton<FindContour_MinAreaRectViewModel>();
                 service.AddSingleton<FindContour_ApproxPolyDPViewModel>();
                 service.AddSingleton<FaceMeshClient>();
+                service.AddSingleton<RudolphEffect>(); // 나중에 Effect는 DLL로 빼서 Plugin 형태면 좋을듯.
             })
             .Build();
 

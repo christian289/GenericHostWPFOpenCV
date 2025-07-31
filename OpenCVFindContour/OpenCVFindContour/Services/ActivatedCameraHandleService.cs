@@ -1,4 +1,6 @@
-﻿namespace OpenCVFindContour.Services;
+﻿using System.Reactive;
+
+namespace OpenCVFindContour.Services;
 
 public sealed class ActivatedCameraHandleService : IDisposable
 {
@@ -113,34 +115,27 @@ public sealed class ActivatedCameraHandleService : IDisposable
             _isCapturing = true;
             _cancellationTokenSource = new CancellationTokenSource();
             _captureSubscription?.Dispose();
-            //_captureSubscription = Observable
-            //    .Interval(TimeSpan.FromMilliseconds(1000.0 / 60), TaskPoolScheduler.Default)
-            //    .TakeWhile(_ => !_cancellationTokenSource.Token.IsCancellationRequested)
-            //    .SelectMany(_ => Observable.FromAsync(CaptureFrameAsync))
-            //    .Where(mat => mat != null && !mat.Empty())
-            //    .Subscribe(
-            //        onNext: mat =>
-            //        {
-            //            if (!_isDisposed && mat is not null)
-            //                _imageSubject.OnNext(mat);
-            //        },
-            //        onError: HandleCaptureError,
-            //        onCompleted: () => _imageSubject.OnCompleted()
-            //    );
             _captureSubscription = Observable
-                .Defer(() => Observable.FromAsync(CaptureFrameAsync))
-                .Repeat()
-                .TakeUntil(_ => _cancellationTokenSource.Token.IsCancellationRequested)
-                .Where(mat => mat is not null && !mat.Empty())
+                .While(() => !_cancellationTokenSource.Token.IsCancellationRequested,
+                    Observable.FromAsync(CaptureFrameAsync)
+                        .Where(mat => mat is not null && !mat.Empty())
+                )
                 .Subscribe(
                     onNext: mat =>
                     {
                         if (!_isDisposed && mat is not null)
                             _imageSubject.OnNext(mat);
                     },
-                    onError: HandleCaptureError,
-                    onCompleted: () => _imageSubject.OnCompleted()
-                );
+                    onError: (ex) =>
+                    {
+                        _imageSubject.OnCompleted();
+                        HandleCaptureError(ex);
+                    },
+                    onCompleted: () =>
+                    {
+                        _imageSubject.OnNext(null);
+                        _imageSubject.OnCompleted();
+                    });
 
             return true;
         }
