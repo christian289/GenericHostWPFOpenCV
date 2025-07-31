@@ -20,26 +20,73 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" MinHeight="80" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <TextBlock Margin="10,0,0,0"
-                       VerticalAlignment="Center"
-                       Text="카메라 선택: " />
-            <ComboBox Margin="0,5,0,5"
-                      VerticalContentAlignment="Center"
-                      DisplayMemberPath="DisplayName"
-                      IsEnabled="{Binding IsCameraStartButtonEnabled}"
-                      ItemsSource="{Binding CameraManager.ActivatedCameraHandleCollection}"
-                      SelectedItem="{Binding CameraManager.SelectedCameraHandleService}" />
-        </StackPanel>
-        <UniformGrid Grid.Row="1"
-                     Columns="3"
-                     Rows="2">
-            <local:Normal DataContext="{Binding NormalViewModel}" />
-            <local:DetectingNose DataContext="{Binding DetectingNoseViewModel}" />
-            <local:Canny DataContext="{Binding CannyViewModel}" />
-            <local:FindContour_ApproxPolyDP DataContext="{Binding FindContour_ApproxPolyDPViewModel}" />
-            <local:FindContour_MinAreaRect DataContext="{Binding FindContour_MinAreaRectViewModel}" />
-        </UniformGrid>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <TextBlock Margin="10,0,0,0"
+                           VerticalAlignment="Center"
+                           Text="카메라 선택: " />
+                <ComboBox Margin="0,5,0,5"
+                          VerticalContentAlignment="Center"
+                          DisplayMemberPath="DisplayName"
+                          IsEnabled="{Binding IsCameraStartButtonEnabled}"
+                          ItemsSource="{Binding CameraManager.ActivatedCameraHandleCollection}"
+                          SelectedItem="{Binding CameraManager.SelectedCameraHandleService}" />
+            </StackPanel>
+            <UniformGrid Grid.Column="1"
+                         Width="100"
+                         Columns="2">
+                <UniformGrid.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                        <Grid>
+                                            <Ellipse Width="40"
+                                                     Height="40"
+                                                     HorizontalAlignment="Center"
+                                                     VerticalAlignment="Center"
+                                                     Stroke="{TemplateBinding BorderBrush}"
+                                                     StrokeThickness="{TemplateBinding BorderThickness}">
+                                                <Ellipse.Fill>
+                                                    <RadialGradientBrush Center="0.5, 0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+                                                        <GradientStop Offset="0.8" Color="Transparent" />
+                                                        <GradientStop Offset="1" Color="BlueViolet" />
+                                                    </RadialGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"
+                                                              TextElement.Foreground="{TemplateBinding Foreground}" />
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </UniformGrid.Resources>
+                <Button Command="{Binding ChangeSelectedViewModelToVideoViewCommand}" Content="Video" />
+                <Button Command="{Binding ChangeSelectedViewModelToPhotoViewCommand}" Content="Photo" />
+            </UniformGrid>
+        </Grid>
+        <ContentControl Grid.Row="1" Content="{Binding SelectedViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:VideoViewModel}">
+                    <local:VideoView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:PhotoViewModel}">
+                    <local:PhotoView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
         <UniformGrid Grid.Row="2" Columns="3">
             <RadioButton Command="{Binding CameraStartCommand}"
                          Content="카메라 연결 시작"

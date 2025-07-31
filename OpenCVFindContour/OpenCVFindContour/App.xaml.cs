@@ -32,6 +32,8 @@ public partial class App : Application
                 service.AddSingleton<CannyViewModel>();
                 service.AddSingleton<FindContour_MinAreaRectViewModel>();
                 service.AddSingleton<FindContour_ApproxPolyDPViewModel>();
+                service.AddSingleton<VideoViewModel>();
+                service.AddSingleton<PhotoViewModel>();
                 service.AddSingleton<FaceMeshClient>();
                 service.AddSingleton<RudolphEffect>(); // 나중에 Effect는 DLL로 빼서 Plugin 형태면 좋을듯.
             })

@@ -1,16 +1,10 @@
 ﻿namespace OpenCVFindContour.Clients;
 
-public sealed class FaceMeshClient
+public sealed class FaceMeshClient(ILogger<FaceMeshClient> logger)
 {
     private const string PipeName = "FaceMeshPipe";
-    private readonly ILogger<FaceMeshClient> logger;
-    private NamedPipeClientStream _pipeClient;
+    private NamedPipeClientStream? _pipeClient;
     private Process? _pythonProcess;
-
-    public FaceMeshClient(ILogger<FaceMeshClient> logger)
-    {
-        this.logger = logger;
-    }
 
     public void StartPythonProcess()
     {

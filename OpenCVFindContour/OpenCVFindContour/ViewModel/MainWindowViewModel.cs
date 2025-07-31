@@ -10,24 +10,15 @@ public partial class MainWindowViewModel : ObservableRecipient
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         CameraManager cameraManager,
-        NormalViewModel normalViewModel,
-        DetectingNoseViewModel detectingNoseViewModel,
-        CannyViewModel cannyViewModel,
-        FindContour_ApproxPolyDPViewModel findContour_ApproxPolyDPViewModel,
-        FindContour_MinAreaRectViewModel findContour_MinAreaRectViewModel)
+        VideoViewModel videoViewModel,
+        PhotoViewModel photoViewModel)
     {
         IsActive = true;
 
         this.logger = logger;
         CameraManager = cameraManager;
-        NormalViewModel = normalViewModel;
-        DetectingNoseViewModel = detectingNoseViewModel;
-        CannyViewModel = cannyViewModel;
-        FindContour_ApproxPolyDPViewModel = findContour_ApproxPolyDPViewModel;
-        FindContour_MinAreaRectViewModel = findContour_MinAreaRectViewModel;
-
-        ResizeMode = $"{WindowResizeMode.CanResize}";
-
+        VideoViewModel = videoViewModel;
+        PhotoViewModel = photoViewModel;
         Initialize();
     }
 
@@ -65,11 +56,11 @@ public partial class MainWindowViewModel : ObservableRecipient
     }
 
     public CameraManager CameraManager { get; init; }
-    public NormalViewModel NormalViewModel { get; init; }
-    public DetectingNoseViewModel DetectingNoseViewModel { get; init; }
-    public CannyViewModel CannyViewModel { get; init; }
-    public FindContour_ApproxPolyDPViewModel FindContour_ApproxPolyDPViewModel { get; init; }
-    public FindContour_MinAreaRectViewModel FindContour_MinAreaRectViewModel { get; init; }
+    public VideoViewModel VideoViewModel { get; init; }
+    public PhotoViewModel PhotoViewModel { get; init; }
+
+    [ObservableProperty]
+    object _selectedViewModel;
 
     [ObservableProperty]
     string _resizeMode;
@@ -103,9 +94,11 @@ public partial class MainWindowViewModel : ObservableRecipient
 
     private void Initialize()
     {
+        ResizeMode = $"{WindowResizeMode.CanResize}";
         CameraManager.SelectedCameraHandleService = CameraManager.ActivatedCameraHandleCollection!.First();
         IsCameraStartButtonEnabled = true;
         ApplyingEffect = false;
+        SelectedViewModel = VideoViewModel;
     }
 
     [RelayCommand(CanExecute = nameof(CanCameraStart))]
@@ -113,13 +106,7 @@ public partial class MainWindowViewModel : ObservableRecipient
     {
         await KillPythonProcessesViaWmiAsync();
         await CameraManager.CameraStartAsync();
-
-        NormalViewModel.RefreshSubscription();
-        await DetectingNoseViewModel.RefreshSubscription();
-        CannyViewModel.RefreshSubscription();
-        FindContour_ApproxPolyDPViewModel.RefreshSubscription();
-        FindContour_MinAreaRectViewModel.RefreshSubscription();
-
+        await VideoViewModel.CameraStartAsync();
         IsCameraStartButtonEnabled = false;
     }
 
@@ -147,4 +134,10 @@ public partial class MainWindowViewModel : ObservableRecipient
     {
         return !IsCameraStartButtonEnabled;
     }
+
+    [RelayCommand]
+    public void ChangeSelectedViewModelToVideoView() => SelectedViewModel = VideoViewModel;
+
+    [RelayCommand]
+    public void ChangeSelectedViewModelToPhotoView() => SelectedViewModel = PhotoViewModel;
 }
