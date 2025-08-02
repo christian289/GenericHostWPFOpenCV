@@ -11,6 +11,18 @@ public sealed partial class CameraManager : ObservableRecipient
         this.logger = logger;
 
         IsActive = true;
+    }
+
+    [ObservableProperty]
+    ObservableCollection<CameraService>? _activatedCameras;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedRecipients]
+    CameraService? _selectedCamera;
+
+    public async Task<bool> CameraStartAsync()
+    {
+        bool result = false;
 
         int cameraCount = 10;
         List<CameraService> cameraHandleServices = new(cameraCount);
@@ -34,36 +46,31 @@ public sealed partial class CameraManager : ObservableRecipient
 
         this.logger.ZLogInformation($"이용 가능한 카메라 장치 개수: {cameraHandleServices.Count}");
 
-        ActivatedCameraHandleCollection = new ObservableCollection<CameraService>(cameraHandleServices);
+        ActivatedCameras = new ObservableCollection<CameraService>(cameraHandleServices);
 
-        if (ActivatedCameraHandleCollection.Count == 0)
+        if (ActivatedCameras.Count == 0)
         {
             this.logger.ZLogCritical($"No camera devices found.");
-            SelectedCameraHandleService = null;
+            SelectedCamera = null;
+            return false;
         }
-    }
 
-    [ObservableProperty]
-    ObservableCollection<CameraService>? _activatedCameraHandleCollection;
+        SelectedCamera = ActivatedCameras[0];
 
-    [ObservableProperty]
-    [NotifyPropertyChangedRecipients]
-    CameraService? _selectedCameraHandleService;
-
-    public async Task CameraStartAsync()
-    {
-        foreach (var cameraHandleService in ActivatedCameraHandleCollection!)
+        foreach (var cameraHandleService in ActivatedCameras!)
         {
             // 아래 옵션은 하드웨어 특징이 명확하지 않은 시점에서는 적용할 경우 resizing 등 오히려 성능 저하를 일으킨다.
             //cameraHandleService.InitializeCamera();
 
-            await cameraHandleService.StartCaptureAsync();
+            result = await cameraHandleService.StartCaptureAsync();
         }
+
+        return result;
     }
 
     public async Task CameraStopAsync()
     {
-        foreach (var cameraHandleService in ActivatedCameraHandleCollection!)
+        foreach (var cameraHandleService in ActivatedCameras!)
             await cameraHandleService.StopCaptureAsync();
     }
 }

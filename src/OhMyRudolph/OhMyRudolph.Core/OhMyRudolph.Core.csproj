@@ -10,4 +10,10 @@
     <ProjectReference Include="..\OhMyRudolpht.Abstractions\OhMyRudolpht.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="deadpool.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

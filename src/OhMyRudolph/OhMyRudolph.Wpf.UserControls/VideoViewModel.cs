@@ -9,13 +9,22 @@ public partial class VideoViewModel : ObservableRecipient
         ILogger<VideoViewModel> logger,
         DetectingNoseViewModel detectingNoseViewModel)
     {
-        IsActive = true;
         this.logger = logger;
-        this.detectingNoseViewModel = detectingNoseViewModel;
+        DetectingNoseViewModel = detectingNoseViewModel;
+
+        IsActive = true;
     }
+
+    public DetectingNoseViewModel DetectingNoseViewModel { get; init; }
+
+    [ObservableProperty]
+    bool _applyingDrawingRudolphEffect;
+
+    [ObservableProperty]
+    bool _applyingOverlayDeadpoolEffect;
 
     public async Task CameraStartAsync()
     {
-        await detectingNoseViewModel.RefreshSubscription();
+        await DetectingNoseViewModel.RefreshSubscription();
     }
 }

@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="OhMyRudolph.Wpf.UserControls.ReadyScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:OhMyRudolph.Wpf.Controls;assembly=OhMyRudolph.Wpf.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:OhMyRudolph.Wpf.UserControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:Background="Black"
+             d:DataContext="{d:DesignInstance local:ReadyScreenViewModel}"
+             d:DesignHeight="720"
+             d:DesignWidth="1280"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf.Core;component/ControlTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource Brush_Foreground_ReadyScreen}" />
+                <Setter Property="FontFamily" Value="{StaticResource FontFamily_ReadyScreen}" />
+                <Setter Property="FontWeight" Value="{StaticResource FontWeight_ReadyScreen}" />
+                <Setter Property="VerticalAlignment" Value="{StaticResource VerticalAlignment_ReadyScreen}" />
+                <Setter Property="HorizontalAlignment" Value="{StaticResource HorizontalAlignment_ReadyScreen}" />
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.65*" />
+            <RowDefinition Height="0.35*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock FontSize="{StaticResource FontSize_ReadyScreen_Ready}" Text="READY!" />
+                <TextBlock FontSize="{StaticResource FontSize_ReadyScreen_CountNotice}" Text="총 1회 촬영" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <StackPanel Orientation="Vertical">
+                <c:PhotoGraySpeechBubble Width="100"
+                                         Height="50"
+                                         Margin="{StaticResource Margin_ReadyScreen_PhotoGraySpeechBubble}"
+                                         HorizontalAlignment="{StaticResource HorizontalAlignment_ReadyScreen_PhotoGraySpeechBubble}"
+                                         FontFamily="{StaticResource FontFamily_ReadyScreen}"
+                                         FontWeight="{StaticResource FontWeight_ReadyScreen}"
+                                         PathStroke="{StaticResource Brush_PathStroke_ReadyScreen}"
+                                         PathThickness="{StaticResource PathThickness_ReadyScreen}"
+                                         Text="TIP" />
+                <TextBlock FontSize="{StaticResource FontSize_ReadyScreen_TextBlock}" Text="1 리모콘을 잡고  2 얼짱 각도 준비  3 카메라 렌즈를 보세요" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

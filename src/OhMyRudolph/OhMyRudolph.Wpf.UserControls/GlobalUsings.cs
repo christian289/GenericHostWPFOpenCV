@@ -7,3 +7,5 @@ global using System.Reactive.Linq;
 global using System.Windows.Controls;
 global using ZLogger;
 global using CommunityToolkit.Mvvm.Input;
+global using System.Diagnostics;
+global using System.Management;

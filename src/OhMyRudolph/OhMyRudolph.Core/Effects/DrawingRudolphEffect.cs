@@ -1,6 +1,6 @@
 ﻿namespace OhMyRudolph.Core.Effects;
 
-public sealed class RudolphEffect
+public sealed class DrawingRudolphEffect
 {
     public Mat ProcesingImage(Mat mat, int nosePointX, int nosePointY)
     {

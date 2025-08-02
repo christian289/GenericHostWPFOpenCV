@@ -28,30 +28,34 @@
                    FontSize="20"
                    FontWeight="DemiBold"
                    Foreground="#FFFFFFFF"
-                   Text="적용 형태를 선택해주세요" />
+                   Text="모드를 선택해주세요" />
         <UniformGrid Grid.Row="1"
                      Margin="10"
                      Columns="2">
-            <c:PhotoGrayModeSelectionCardButton Width="250"
+            <c:PhotoGrayModeSelectionCardButton Width="300"
                                                 Margin="0,0,4,0"
                                                 HorizontalAlignment="Right"
                                                 Background="#FFFFFFFF"
+                                                Command="{Binding NavigatePhotoViewCommand}"
                                                 InternalMargin="10"
                                                 ItemString="파일 업로드"
                                                 ItemStringForeground="#FF131313">
                 <iconPacks:PackIconMaterialDesign Kind="AttachFile" />
             </c:PhotoGrayModeSelectionCardButton>
-            <c:PhotoGrayModeSelectionCardButton Width="250"
+            <c:PhotoGrayModeSelectionCardButton Width="300"
                                                 Margin="4,0,0,0"
                                                 HorizontalAlignment="Left"
                                                 Background="#FF131313"
+                                                Command="{Binding NavigateVideoViewCommand}"
                                                 InternalMargin="10,10,10,10"
                                                 ItemString="라이브 스냅샷 촬영"
                                                 ItemStringForeground="#FFFFFFFF">
                 <iconPacks:PackIconMaterialDesign Foreground="White" Kind="CameraAlt" />
             </c:PhotoGrayModeSelectionCardButton>
         </UniformGrid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
+        <StackPanel Grid.Row="2"
+                    Margin="10,0,0,0"
+                    Orientation="Horizontal">
             <c:PhotoGrayBackButton Width="150"
                                    Height="40"
                                    Command="{Binding NavigateMainPageCommand}" />

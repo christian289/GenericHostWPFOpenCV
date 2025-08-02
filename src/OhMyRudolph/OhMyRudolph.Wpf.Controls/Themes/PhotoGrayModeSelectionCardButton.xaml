@@ -1,24 +1,32 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:OhMyRudolph.Wpf.Controls">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf.Core;component/ControlTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+
     <Style TargetType="{x:Type local:PhotoGrayModeSelectionCardButton}">
-        <Setter Property="BorderBrush" Value="#FF353535" />
-        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush_BorderBrush_PhotoGrayModeSelectionCardButton}" />
+        <Setter Property="BorderThickness" Value="{StaticResource Thickness_PhotoGrayModeSelectionCardButton}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:PhotoGrayModeSelectionCardButton}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="20">
+                            CornerRadius="{StaticResource CornerRadius_PhotoGrayModeSelectionCardButton}">
                         <Grid>
                             <Grid.Resources>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="FontFamily" Value="Malgun Gothic" />
-                                    <Setter Property="FontSize" Value="23" />
-                                    <Setter Property="FontWeight" Value="Medium" />
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                    <Setter Property="HorizontalAlignment" Value="Center" />
+                                    <Setter Property="FontFamily" Value="{StaticResource FontFamily_PhotoGrayModeSelectionCardButton}" />
+                                    <Setter Property="FontSize" Value="{StaticResource FontSize_PhotoGrayModeSelectionCardButton}" />
+                                    <Setter Property="FontWeight" Value="{StaticResource FontWeight_PhotoGrayModeSelectionCardButton}" />
+                                    <Setter Property="VerticalAlignment" Value="{StaticResource VerticalAlignment_PhotoGrayModeSelectionCardButton}" />
+                                    <Setter Property="HorizontalAlignment" Value="{StaticResource HorizontalAlignment_PhotoGrayModeSelectionCardButton}" />
                                 </Style>
                             </Grid.Resources>
                             <Grid.RowDefinitions>
@@ -35,7 +43,6 @@
                                                   ContentTemplate="{TemplateBinding ContentTemplate}" />
                             </Viewbox>
                         </Grid>
-
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

@@ -6,10 +6,17 @@ public partial class MainWindowViewModel : ObservableRecipient, IRecipient<Value
 {
     public MainWindowViewModel(
         MainPageViewModel mainPageViewModel,
-        SelectModeViewModel selectModeViewModel)
+        SelectModeViewModel selectModeViewModel,
+        ReadyScreenViewModel readyScreenViewModel,
+        VideoViewModel videoViewModel,
+        PhotoViewModel photoViewModel)
     {
         MainPageViewModel = mainPageViewModel;
         SelectModeViewModel = selectModeViewModel;
+        ReadyScreenViewModel = readyScreenViewModel;
+        VideoViewModel = videoViewModel;
+        PhotoViewModel = photoViewModel;
+
         IsActive = true;
 
         CurrentViewModel = MainPageViewModel;
@@ -19,8 +26,14 @@ public partial class MainWindowViewModel : ObservableRecipient, IRecipient<Value
 
     public SelectModeViewModel SelectModeViewModel { get; init; }
 
+    public ReadyScreenViewModel ReadyScreenViewModel { get; init; }
+
+    public VideoViewModel VideoViewModel { get; init; }
+
+    public PhotoViewModel PhotoViewModel { get; init; }
+
     [ObservableProperty]
-    ObservableRecipient _currentViewModel;
+    ObservableObject _currentViewModel;
 
     public void Receive(ValueChangedMessage<string> message)
     {
@@ -32,5 +45,11 @@ public partial class MainWindowViewModel : ObservableRecipient, IRecipient<Value
             CurrentViewModel = MainPageViewModel;
         else if (viewModelName == nameof(SelectModeViewModel))
             CurrentViewModel = SelectModeViewModel;
+        else if (viewModelName == nameof(ReadyScreenViewModel))
+            CurrentViewModel = ReadyScreenViewModel;
+        else if (viewModelName == nameof(VideoViewModel))
+            CurrentViewModel = VideoViewModel;
+        else if (viewModelName == nameof(PhotoViewModel))
+            CurrentViewModel = PhotoViewModel;
     }
 }

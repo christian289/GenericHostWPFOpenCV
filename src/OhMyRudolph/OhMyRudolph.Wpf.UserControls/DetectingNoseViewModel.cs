@@ -9,22 +9,26 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
 {
     private readonly ILogger<DetectingNoseViewModel> logger;
     private readonly FaceMeshClient faceMeshClient;
-    private readonly RudolphEffect rudolphEffect;
+    private readonly DrawingRudolphEffect drawingRudolphEffect;
+    private readonly OverlayDeadpoolEffect overlayDeadpoolEffect;
     IDisposable? currentSubscription;
     CameraService? currentCameraService;
-    bool _applyingEffect;
+    bool _applyingDrawingRudolphEffect;
+    bool _applyingOverlayDeadpoolEffect;
 
     public DetectingNoseViewModel(
         ILogger<DetectingNoseViewModel> logger,
         FaceMeshClient faceMeshClient,
-        RudolphEffect rudolphEffect)
+        DrawingRudolphEffect drawingRudolphEffect,
+        OverlayDeadpoolEffect overlayDeadpoolEffect)
     {
-        IsActive = true;
         this.logger = logger;
         this.faceMeshClient = faceMeshClient;
-        this.rudolphEffect = rudolphEffect;
-
-        _applyingEffect = false;
+        this.drawingRudolphEffect = drawingRudolphEffect;
+        this.overlayDeadpoolEffect = overlayDeadpoolEffect;
+        _applyingDrawingRudolphEffect = false;
+        _applyingOverlayDeadpoolEffect = false;
+        IsActive = true;
     }
 
     [ObservableProperty]
@@ -32,7 +36,7 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
 
     public void Receive(PropertyChangedMessage<CameraService> message)
     {
-        if (message.PropertyName == nameof(CameraManager.SelectedCameraHandleService) && message.NewValue is not null)
+        if (message.PropertyName == nameof(CameraManager.SelectedCamera) && message.NewValue is not null)
         {
             currentSubscription?.Dispose();
             currentCameraService = message.NewValue;
@@ -42,11 +46,18 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
 
     public void Receive(PropertyChangedMessage<bool> message)
     {
-        //if (message.Sender is MainWindowViewModel &&
-        //    message.PropertyName == nameof(MainWindowViewModel.ApplyingEffect))
-        //{
-        //    _applyingEffect = message.NewValue;
-        //}
+        if (message.Sender is VideoViewModel &&
+            message.PropertyName == nameof(VideoViewModel.ApplyingDrawingRudolphEffect))
+        {
+            _applyingDrawingRudolphEffect = message.NewValue;
+            _applyingOverlayDeadpoolEffect = false;
+        }
+        else if (message.Sender is VideoViewModel &&
+            message.PropertyName == nameof(VideoViewModel.ApplyingOverlayDeadpoolEffect))
+        {
+            _applyingDrawingRudolphEffect = false;
+            _applyingOverlayDeadpoolEffect = message.NewValue;
+        }
     }
 
     public async Task RefreshSubscription()
@@ -88,10 +99,18 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
     {
         IReadOnlyCollection<(int X, int Y)>? points = await faceMeshClient.SendImageAndGetNoseAsync(mat);
 
-        if (_applyingEffect && points is not null)
+        if (points is not null)
         {
-            foreach (var (X, Y) in points)
-                mat = rudolphEffect.ProcesingImage(mat, X, Y);
+            if (_applyingDrawingRudolphEffect)
+            {
+                foreach (var (X, Y) in points)
+                    mat = drawingRudolphEffect.ProcesingImage(mat, X, Y);
+            }
+            else if (_applyingOverlayDeadpoolEffect)
+            {
+                foreach (var (X, Y) in points)
+                    mat = overlayDeadpoolEffect.ProcesingImage(mat, X, Y);
+            }
         }
 
         PrintMat = mat;

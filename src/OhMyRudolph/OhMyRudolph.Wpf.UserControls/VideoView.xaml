@@ -5,8 +5,20 @@
              xmlns:local="clr-namespace:OhMyRudolph.Wpf.UserControls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              d:DataContext="{d:DesignInstance local:VideoViewModel}"
-             d:DesignHeight="450"
-             d:DesignWidth="800"
+             d:DesignHeight="720"
+             d:DesignWidth="1280"
              mc:Ignorable="d">
-    <Grid />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf.Core;component/ControlTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <local:DetectingNoseView Width="{StaticResource Width_DetectingNoseView}"
+                                 Height="{StaticResource Height_DetectingNoseView}"
+                                 DataContext="{Binding DetectingNoseViewModel}" />
+        
+    </Grid>
 </UserControl>

@@ -30,13 +30,17 @@ internal sealed class App : Application
                 services.AddSingleton<CameraManager>();
                 services.AddSingleton<FaceMeshClient>();
                 services.AddSingleton<DetectingNoseViewModel>();
+                services.AddSingleton<ReadyScreenViewModel>();
                 services.AddSingleton<VideoViewModel>();
                 services.AddSingleton<PhotoViewModel>();
                 services.AddSingleton<SelectModeViewModel>();
                 services.AddSingleton<MainPageViewModel>();
                 services.AddSingleton<MainWindowViewModel>();
-                services.AddSingleton<RudolphEffect>(); // 나중에 Effect는 DLL로 빼서 Plugin 형태면 좋을듯.
                 services.AddSingleton<MainWindow>();
+
+                // 나중에 Effect는 DLL로 빼서 Plugin 형태면 좋을듯.
+                services.AddSingleton<DrawingRudolphEffect>();
+                services.AddSingleton<OverlayDeadpoolEffect>();
             })
             .Build();
 

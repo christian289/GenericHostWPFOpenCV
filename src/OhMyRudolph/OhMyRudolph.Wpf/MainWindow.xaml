@@ -6,18 +6,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:uc="clr-namespace:OhMyRudolph.Wpf.UserControls;assembly=OhMyRudolph.Wpf.UserControls"
         Title="MainWindow"
-        Width="800"
-        Height="450"
+        Width="1280"
+        Height="720"
         d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
         Background="#FF131313"
         mc:Ignorable="d">
     <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Mapping.xaml" />
-                <ResourceDictionary Source="/OhMyRudolph.Wpf.Core;component/ColorTheme.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf;component/Mapping.xaml" />
     </Window.Resources>
     <Grid>
         <ContentControl Content="{Binding CurrentViewModel}" />
