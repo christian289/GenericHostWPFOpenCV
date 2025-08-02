@@ -23,7 +23,8 @@ internal sealed class App : Application
             {
                 logging.ClearProviders();
                 logging.AddZLoggerConsole();
-                logging.SetMinimumLevel(LogLevel.Information);
+                //logging.SetMinimumLevel(LogLevel.Information);
+                logging.SetMinimumLevel(LogLevel.Debug);
             })
             .ConfigureServices((context, services) =>
             {

@@ -102,12 +102,12 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
             if (_applyingDrawingRudolphEffect)
             {
                 foreach (var (X, Y) in points)
-                    mat = drawingRudolphEffect.ProcesingImage(mat, X, Y);
+                    mat = drawingRudolphEffect.ProcessImage(mat, X, Y);
             }
             else if (_applyingOverlayDeadpoolEffect)
             {
                 foreach (var (X, Y) in points)
-                    mat = overlayDeadpoolEffect.ProcesingImage(mat, X, Y);
+                    mat = overlayDeadpoolEffect.ProcessImage(mat, X, Y);
             }
         }
 
