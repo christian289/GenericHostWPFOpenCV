@@ -1,0 +1,21 @@
+﻿<Window x:Class="OhMyRudolph.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:OhMyRudolph.Wpf"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uc="clr-namespace:OhMyRudolph.Wpf.UserControls;assembly=OhMyRudolph.Wpf.UserControls"
+        Title="MainWindow"
+        Width="800"
+        Height="450"
+        mc:Ignorable="d">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type uc:VideoViewModel}">
+            <uc:VideoView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type uc:PhotoViewModel}">
+            <uc:PhotoView />
+        </DataTemplate>
+    </Window.Resources>
+    <Grid />
+</Window>
