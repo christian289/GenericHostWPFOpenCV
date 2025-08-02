@@ -60,6 +60,8 @@ def handle_client(pipe):
 
             if img is None:
                 print("[⚠️ 경고] 이미지 디코딩 실패")
+                print(f"[⚠️ 디코딩 실패] 수신된 이미지 길이: {len(img_buf)}")
+                print(f"[⚠️ 디코딩 실패] 시작 바이트: {img_buf[:10]}")
                 result_json = json.dumps({}).encode('utf-8')
             else:
                 noses = find_noses(img)

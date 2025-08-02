@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:OhMyRudolph.Wpf.Controls">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGrayBackButton.xaml" />
+        <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGrayEffectSelectionButton.xaml" />
         <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGrayMainPageButton.xaml" />
         <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGrayModeSelectionCardButton.xaml" />
         <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGraySpeechBubble.xaml" />

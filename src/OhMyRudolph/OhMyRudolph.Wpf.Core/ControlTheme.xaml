@@ -19,6 +19,10 @@
     <CornerRadius x:Key="CornerRadius_PhotoGrayBackButton">25</CornerRadius>
     <sys:Double x:Key="BackSymbol_PhotoGrayBackButton">8</sys:Double>
 
+    <!--  PhotoGrayEffectSelectionButton.xaml  -->
+    <sys:Double x:Key="WidthHeight_PhotoGrayEffectSelectionButton">200</sys:Double>
+    <CornerRadius x:Key="CornerRadius_PhotoGrayEffectSelectionButton">5</CornerRadius>
+
     <!--  PhotoGrayMainPageButton.xaml  -->
     <Color x:Key="BorderBrush_PhotoGrayMainPageButton">#FFFFFFFF</Color>
     <SolidColorBrush x:Key="Brush_BorderBrush_PhotoGrayMainPageButton" Color="{StaticResource BorderBrush_PhotoGrayMainPageButton}" />
@@ -62,4 +66,9 @@
     <!--  VideoView.xaml  -->
     <sys:Double x:Key="Width_DetectingNoseView">850</sys:Double>
     <sys:Double x:Key="Height_DetectingNoseView">650</sys:Double>
+    <sys:Double x:Key="Width_ButtonSet">700</sys:Double>
+    <sys:Double x:Key="Height_ButtonSet">220</sys:Double>
+    <VerticalAlignment x:Key="VerticalAlignment_ButtonSet">Bottom</VerticalAlignment>
+    <HorizontalAlignment x:Key="HorizontalAlignment_ButtonSet">Center</HorizontalAlignment>
+    <Thickness x:Key="Margin_ButtonSet">0,0,0,20</Thickness>
 </ResourceDictionary>

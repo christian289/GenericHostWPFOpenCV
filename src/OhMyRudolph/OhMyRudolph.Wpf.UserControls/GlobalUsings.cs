@@ -9,3 +9,4 @@ global using ZLogger;
 global using CommunityToolkit.Mvvm.Input;
 global using System.Diagnostics;
 global using System.Management;
+global using System.IO;

@@ -55,7 +55,7 @@ public sealed partial class CameraManager : ObservableRecipient
             return false;
         }
 
-        SelectedCamera = ActivatedCameras[0];
+        SelectedCamera = ActivatedCameras.First();
 
         foreach (var cameraHandleService in ActivatedCameras!)
         {

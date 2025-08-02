@@ -50,12 +50,10 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
             message.PropertyName == nameof(VideoViewModel.ApplyingDrawingRudolphEffect))
         {
             _applyingDrawingRudolphEffect = message.NewValue;
-            _applyingOverlayDeadpoolEffect = false;
         }
         else if (message.Sender is VideoViewModel &&
             message.PropertyName == nameof(VideoViewModel.ApplyingOverlayDeadpoolEffect))
         {
-            _applyingDrawingRudolphEffect = false;
             _applyingOverlayDeadpoolEffect = message.NewValue;
         }
     }
