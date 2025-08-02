@@ -8,16 +8,12 @@ public partial class SelectModeViewModel : ObservableRecipient
 
     public SelectModeViewModel(
         ILogger<SelectModeViewModel> logger,
-        CameraManager cameraManager,
         VideoViewModel videoViewModel)
     {
         this.logger = logger;
-        CameraManager = cameraManager;
         VideoViewModel = videoViewModel;
         IsActive = true;
     }
-
-    public CameraManager CameraManager { get; init; }
 
     public VideoViewModel VideoViewModel { get; init; }
 
@@ -63,17 +59,11 @@ public partial class SelectModeViewModel : ObservableRecipient
     [RelayCommand]
     public async Task NavigateVideoView()
     {
-        Messenger.Send(new ValueChangedMessage<string>(nameof(ReadyScreenViewModel)));
-        var minimumDelayTask = Task.Delay(TimeSpan.FromSeconds(5));
-        var operationsTask = ExecuteSequentialOperationsAsync();
-        await Task.WhenAll(minimumDelayTask, operationsTask);
-        Messenger.Send(new ValueChangedMessage<string>(nameof(VideoViewModel)));
-    }
-
-    private async Task ExecuteSequentialOperationsAsync()
-    {
         await KillPythonProcessesViaWmiAsync();
-        await CameraManager.CameraStartAsync();
+        Messenger.Send(new ValueChangedMessage<string>(nameof(ReadyScreenViewModel)));
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        Messenger.Send(new ValueChangedMessage<string>(nameof(VideoViewModel)));
+        await Task.Delay(TimeSpan.FromSeconds(1));
         await VideoViewModel.CameraStartAsync();
     }
 

@@ -57,6 +57,8 @@ public sealed partial class CameraManager : ObservableRecipient
 
         SelectedCamera = ActivatedCameras.First();
 
+        await Task.Delay(TimeSpan.FromSeconds(2));
+
         foreach (var cameraHandleService in ActivatedCameras!)
         {
             // 아래 옵션은 하드웨어 특징이 명확하지 않은 시점에서는 적용할 경우 resizing 등 오히려 성능 저하를 일으킨다.

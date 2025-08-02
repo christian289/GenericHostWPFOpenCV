@@ -1,4 +1,6 @@
-﻿namespace OhMyRudolph.Wpf.UserControls;
+﻿using OhMyRudolph.Core.Managers;
+
+namespace OhMyRudolph.Wpf.UserControls;
 
 public partial class VideoViewModel : ObservableRecipient
 {
@@ -6,13 +8,17 @@ public partial class VideoViewModel : ObservableRecipient
 
     public VideoViewModel(
         ILogger<VideoViewModel> logger,
+        CameraManager cameraManager,
         DetectingNoseViewModel detectingNoseViewModel)
     {
         this.logger = logger;
+        CameraManager = cameraManager;
         DetectingNoseViewModel = detectingNoseViewModel;
 
         IsActive = true;
     }
+
+    public CameraManager CameraManager { get; init; }
 
     public DetectingNoseViewModel DetectingNoseViewModel { get; init; }
 
@@ -26,6 +32,7 @@ public partial class VideoViewModel : ObservableRecipient
 
     public async Task CameraStartAsync()
     {
+        await CameraManager.CameraStartAsync();
         await DetectingNoseViewModel.RefreshSubscription();
     }
 
