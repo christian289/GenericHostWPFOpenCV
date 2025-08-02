@@ -8,14 +8,18 @@
         Title="MainWindow"
         Width="800"
         Height="450"
+        d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
+        Background="#FF131313"
         mc:Ignorable="d">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type uc:VideoViewModel}">
-            <uc:VideoView />
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type uc:PhotoViewModel}">
-            <uc:PhotoView />
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Mapping.xaml" />
+                <ResourceDictionary Source="/OhMyRudolph.Wpf.Core;component/ColorTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
-    <Grid />
+    <Grid>
+        <ContentControl Content="{Binding CurrentViewModel}" />
+    </Grid>
 </Window>

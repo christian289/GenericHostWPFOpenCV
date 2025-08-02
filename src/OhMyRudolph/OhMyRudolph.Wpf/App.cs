@@ -12,6 +12,7 @@ internal sealed class App : Application
         base.OnStartup(e);
         var serviceProvider = BootStrapper();
         MainWindow window = serviceProvider.GetRequiredService<MainWindow>();
+        window.DataContext = serviceProvider.GetRequiredService<MainWindowViewModel>();
         window.ShowDialog();
     }
 
@@ -28,10 +29,14 @@ internal sealed class App : Application
             {
                 services.AddSingleton<CameraManager>();
                 services.AddSingleton<FaceMeshClient>();
+                services.AddSingleton<DetectingNoseViewModel>();
                 services.AddSingleton<VideoViewModel>();
                 services.AddSingleton<PhotoViewModel>();
+                services.AddSingleton<SelectModeViewModel>();
+                services.AddSingleton<MainPageViewModel>();
+                services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<RudolphEffect>(); // 나중에 Effect는 DLL로 빼서 Plugin 형태면 좋을듯.
-
+                services.AddSingleton<MainWindow>();
             })
             .Build();
 

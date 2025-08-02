@@ -5,7 +5,7 @@ using OhMyRudolph.Core.Services;
 
 namespace OhMyRudolph.Wpf.UserControls;
 
-public sealed partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<CameraService>>, IRecipient<PropertyChangedMessage<bool>>
+public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<CameraService>>, IRecipient<PropertyChangedMessage<bool>>
 {
     private readonly ILogger<DetectingNoseViewModel> logger;
     private readonly FaceMeshClient faceMeshClient;

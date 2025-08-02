@@ -1,0 +1,42 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:cnvt="clr-namespace:OhMyRudolph.Wpf.Core.Converters;assembly=OhMyRudolph.Wpf.Core"
+                    xmlns:local="clr-namespace:OhMyRudolph.Wpf.Controls">
+    <Style TargetType="{x:Type local:PhotoGrayBackButton}">
+        <!--  App.xaml을 삭제했으므로 DynamicResource를 통해 접근가능하나, DesignTime에서 확인이 불가하여 개발 생산성이 떨어짐.  -->
+        <Setter Property="BorderBrush" Value="#FF404040" />
+        <Setter Property="Background" Value="#FF202020" />
+        <Setter Property="BorderThickness" Value="1.5" />
+        <Setter Property="FontFamily" Value="Malgun Gothic" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="DemiBold" />
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:PhotoGrayBackButton}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="25">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal">
+                            <TextBlock Margin="0,0,5,0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="{TemplateBinding FontSize,
+                                                                  Converter={cnvt:FontSizeStaticIncrementConverter},
+                                                                  ConverterParameter=8}"
+                                       FontWeight="Bold"
+                                       Text="〈" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       Text="뒤로가기" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

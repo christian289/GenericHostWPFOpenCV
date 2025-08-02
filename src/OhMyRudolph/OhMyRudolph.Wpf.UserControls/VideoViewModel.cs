@@ -1,6 +1,6 @@
 ﻿namespace OhMyRudolph.Wpf.UserControls;
 
-public sealed partial class VideoViewModel : ObservableRecipient
+public partial class VideoViewModel : ObservableRecipient
 {
     private readonly ILogger<VideoViewModel> logger;
     private readonly DetectingNoseViewModel detectingNoseViewModel;

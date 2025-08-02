@@ -1,8 +1,8 @@
 ﻿namespace OhMyRudolph.Wpf.UserControls;
 
-public partial class MainPageView : UserControl
+public partial class SelectModeView : UserControl
 {
-    public MainPageView()
+    public SelectModeView()
     {
         InitializeComponent();
     }

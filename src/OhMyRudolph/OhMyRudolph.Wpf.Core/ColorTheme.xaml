@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="PhotoGrayBackground">#FF131313</Color>
+    <SolidColorBrush x:Key="Brush_PhotoGrayBackground" Color="{StaticResource PhotoGrayBackground}" />
+    <Color x:Key="PhotoGrayMainPageButtonForeground">#FFFFFFFF</Color>
+    <SolidColorBrush x:Key="Brush_PhotoGrayMainPageButtonForeground" Color="{StaticResource PhotoGrayMainPageButtonForeground}" />
+    <Color x:Key="PhotoGrayMainPageButtonBorderBrush">#FFFFFFFF</Color>
+    <SolidColorBrush x:Key="Brush_PhotoGrayMainPageButtonBorderBrush" Color="{StaticResource PhotoGrayMainPageButtonBorderBrush}" />
+</ResourceDictionary>
