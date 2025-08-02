@@ -1,0 +1,20 @@
+﻿<Window x:Class="OhMyRudolph.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:OhMyRudolph.Wpf"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uc="clr-namespace:OhMyRudolph.Wpf.UserControls;assembly=OhMyRudolph.Wpf.UserControls"
+        Title="MainWindow"
+        Width="1280"
+        Height="720"
+        d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
+        Background="#FF131313"
+        mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf;component/Mapping.xaml" />
+    </Window.Resources>
+    <Grid>
+        <ContentControl Content="{Binding CurrentViewModel}" />
+    </Grid>
+</Window>

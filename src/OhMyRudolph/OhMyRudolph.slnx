@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/솔루션 항목/">
+    <File Path="Readme.md" />
+  </Folder>
+  <Project Path="OhMyRudolph.Core/OhMyRudolph.Core.csproj" Id="d5676782-49ed-485c-a1eb-7ebe547c9366" />
+  <Project Path="OhMyRudolph.Wpf.Controls/OhMyRudolph.Wpf.Controls.csproj" Id="6c95de9a-1527-4c6a-9b33-249b8bfff09e" />
+  <Project Path="OhMyRudolph.Wpf.Core/OhMyRudolph.Wpf.Core.csproj" Id="5961da18-f932-4074-aede-db025b6ec7ce" />
+  <Project Path="OhMyRudolph.Wpf.UserControls/OhMyRudolph.Wpf.UserControls.csproj" Id="ee734671-55d6-430b-876a-90ac3bf864bb" />
+  <Project Path="OhMyRudolph.Wpf/OhMyRudolph.Wpf.csproj" Id="a0ade0ca-f419-4612-bf3b-304f0f57072e" />
+  <Project Path="OhMyRudolpht.Abstractions/OhMyRudolpht.Abstractions.csproj" Id="50a26ce8-40b5-4b57-9d1f-f344b542bc82" />
+</Solution>

@@ -1,0 +1,74 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!--  MainWindow.xaml  -->
+    <Color x:Key="Background_MainWindow">#FF131313</Color>
+    <SolidColorBrush x:Key="Brush_Background_MainWindow" Color="{StaticResource Background_MainWindow}" />
+
+    <!--  PhotoGrayBackButton.xaml  -->
+    <Color x:Key="BorderBrush_PhotoGrayBackButton">#FF404040</Color>
+    <SolidColorBrush x:Key="Brush_BorderBrush_PhotoGrayBackButton" Color="{StaticResource BorderBrush_PhotoGrayBackButton}" />
+    <Color x:Key="Background_PhotoGrayBackButton">#FF202020</Color>
+    <SolidColorBrush x:Key="Brush_Background_PhotoGrayBackButton" Color="{StaticResource Background_PhotoGrayBackButton}" />
+    <Thickness x:Key="Thickness_PhotoGrayBackButton">1.5</Thickness>
+    <FontFamily x:Key="FontFamily_PhotoGrayBackButton">Malgun Gothic</FontFamily>
+    <sys:Double x:Key="FontSize_PhotoGrayBackButton">18</sys:Double>
+    <FontWeight x:Key="FontWeight_PhotoGrayBackButton">DemiBold</FontWeight>
+    <Color x:Key="Foreground_PhotoGrayBackButton">#FFFFFFFF</Color>
+    <SolidColorBrush x:Key="Brush_Foreground_PhotoGrayBackButton" Color="{StaticResource Foreground_PhotoGrayBackButton}" />
+    <CornerRadius x:Key="CornerRadius_PhotoGrayBackButton">25</CornerRadius>
+    <sys:Double x:Key="BackSymbol_PhotoGrayBackButton">8</sys:Double>
+
+    <!--  PhotoGrayEffectSelectionButton.xaml  -->
+    <sys:Double x:Key="WidthHeight_PhotoGrayEffectSelectionButton">200</sys:Double>
+    <CornerRadius x:Key="CornerRadius_PhotoGrayEffectSelectionButton">5</CornerRadius>
+
+    <!--  PhotoGrayMainPageButton.xaml  -->
+    <Color x:Key="BorderBrush_PhotoGrayMainPageButton">#FFFFFFFF</Color>
+    <SolidColorBrush x:Key="Brush_BorderBrush_PhotoGrayMainPageButton" Color="{StaticResource BorderBrush_PhotoGrayMainPageButton}" />
+    <Color x:Key="Background_PhotoGrayMainPageButton">#FF131313</Color>
+    <SolidColorBrush x:Key="Brush_Background_PhotoGrayMainPageButton" Color="{StaticResource Background_PhotoGrayMainPageButton}" />
+    <Thickness x:Key="Thickness_PhotoGrayMainPageButton">1.5</Thickness>
+    <FontFamily x:Key="FontFamily_PhotoGrayMainPageButton">Malgun Gothic</FontFamily>
+    <sys:Double x:Key="FontSize_PhotoGrayMainPageButton">18</sys:Double>
+    <FontWeight x:Key="FontWeight_PhotoGrayMainPageButton">DemiBold</FontWeight>
+    <Color x:Key="Foreground_PhotoGrayMainPageButton">#FFFFFFFF</Color>
+    <SolidColorBrush x:Key="Brush_Foreground_PhotoGrayMainPageButton" Color="{StaticResource Foreground_PhotoGrayMainPageButton}" />
+    <CornerRadius x:Key="CornerRadius_PhotoGrayMainPageButton">25</CornerRadius>
+
+    <!--  PhotoGrayModeSelectionCardButton.xaml  -->
+    <Color x:Key="BorderBrush_PhotoGrayModeSelectionCardButton">#FF353535</Color>
+    <SolidColorBrush x:Key="Brush_BorderBrush_PhotoGrayModeSelectionCardButton" Color="{StaticResource BorderBrush_PhotoGrayModeSelectionCardButton}" />
+    <Thickness x:Key="Thickness_PhotoGrayModeSelectionCardButton">2</Thickness>
+    <CornerRadius x:Key="CornerRadius_PhotoGrayModeSelectionCardButton">20</CornerRadius>
+    <FontFamily x:Key="FontFamily_PhotoGrayModeSelectionCardButton">Malgun Gothic</FontFamily>
+    <sys:Double x:Key="FontSize_PhotoGrayModeSelectionCardButton">23</sys:Double>
+    <FontWeight x:Key="FontWeight_PhotoGrayModeSelectionCardButton">Medium</FontWeight>
+    <VerticalAlignment x:Key="VerticalAlignment_PhotoGrayModeSelectionCardButton">Center</VerticalAlignment>
+    <HorizontalAlignment x:Key="HorizontalAlignment_PhotoGrayModeSelectionCardButton">Center</HorizontalAlignment>
+
+    <!--  ReadyScreen.xaml  -->
+    <Color x:Key="Foreground_ReadyScreen">#FFFFFFFF</Color>
+    <SolidColorBrush x:Key="Brush_Foreground_ReadyScreen" Color="{StaticResource Foreground_ReadyScreen}" />
+    <FontFamily x:Key="FontFamily_ReadyScreen">Malgun Gothic</FontFamily>
+    <FontWeight x:Key="FontWeight_ReadyScreen">DemiBold</FontWeight>
+    <VerticalAlignment x:Key="VerticalAlignment_ReadyScreen">Center</VerticalAlignment>
+    <HorizontalAlignment x:Key="HorizontalAlignment_ReadyScreen">Center</HorizontalAlignment>
+    <Color x:Key="PathStroke_ReadyScreen">#FFB62F2F</Color>
+    <SolidColorBrush x:Key="Brush_PathStroke_ReadyScreen" Color="{StaticResource PathStroke_ReadyScreen}" />
+    <Thickness x:Key="PathThickness_ReadyScreen">2</Thickness>
+    <sys:Double x:Key="FontSize_ReadyScreen_Ready">120</sys:Double>
+    <sys:Double x:Key="FontSize_ReadyScreen_CountNotice">25</sys:Double>
+    <sys:Double x:Key="FontSize_ReadyScreen_TextBlock">30</sys:Double>
+    <HorizontalAlignment x:Key="HorizontalAlignment_ReadyScreen_PhotoGraySpeechBubble">Left</HorizontalAlignment>
+    <Thickness x:Key="Margin_ReadyScreen_PhotoGraySpeechBubble">180,0,0,0</Thickness>
+
+    <!--  VideoView.xaml  -->
+    <sys:Double x:Key="Width_DetectingNoseView">850</sys:Double>
+    <sys:Double x:Key="Height_DetectingNoseView">650</sys:Double>
+    <sys:Double x:Key="Width_ButtonSet">700</sys:Double>
+    <sys:Double x:Key="Height_ButtonSet">220</sys:Double>
+    <VerticalAlignment x:Key="VerticalAlignment_ButtonSet">Bottom</VerticalAlignment>
+    <HorizontalAlignment x:Key="HorizontalAlignment_ButtonSet">Center</HorizontalAlignment>
+    <Thickness x:Key="Margin_ButtonSet">0,0,0,20</Thickness>
+</ResourceDictionary>

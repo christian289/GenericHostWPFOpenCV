@@ -9,11 +9,14 @@
              d:DesignHeight="450"
              d:DesignWidth="800"
              mc:Ignorable="d">
-    <UniformGrid Columns="3" Rows="2">
+    <!--<UniformGrid Columns="3" Rows="2">
         <local:Normal DataContext="{Binding NormalViewModel}" />
         <local:DetectingNose DataContext="{Binding DetectingNoseViewModel}" />
         <local:Canny DataContext="{Binding CannyViewModel}" />
         <local:FindContour_ApproxPolyDP DataContext="{Binding FindContour_ApproxPolyDPViewModel}" />
         <local:FindContour_MinAreaRect DataContext="{Binding FindContour_MinAreaRectViewModel}" />
+    </UniformGrid>-->
+    <UniformGrid>
+        <local:DetectingNose DataContext="{Binding DetectingNoseViewModel}" />
     </UniformGrid>
 </UserControl>
