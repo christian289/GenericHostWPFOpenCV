@@ -51,8 +51,9 @@ public partial class SelectModeViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    public void NavigatePhotoView()
+    public async Task NavigatePhotoView()
     {
+        await KillPythonProcessesViaWmiAsync();
         Messenger.Send(new ValueChangedMessage<string>(nameof(PhotoViewModel)));
     }
 

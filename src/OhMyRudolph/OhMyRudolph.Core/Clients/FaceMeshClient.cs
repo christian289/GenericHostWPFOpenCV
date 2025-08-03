@@ -32,7 +32,6 @@ public sealed class FaceMeshClient(ILogger<FaceMeshClient> logger)
             if (!string.IsNullOrWhiteSpace(args.Data))
                 Console.WriteLine($"[PYTHON STDOUT] {args.Data}");
         };
-
         _pythonProcess.ErrorDataReceived += (sender, args) =>
         {
             if (!string.IsNullOrWhiteSpace(args.Data))

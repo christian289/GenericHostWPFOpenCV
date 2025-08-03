@@ -1,6 +1,6 @@
 ﻿namespace OhMyRudolph.Core.Effects;
 
-public sealed class OverlayDeadpoolEffect
+public sealed class OverlayDeadpoolEffect : IDisposable
 {
     private readonly Mat? overlayBgr;
     private readonly Mat? alphaMask;
@@ -88,5 +88,11 @@ public sealed class OverlayDeadpoolEffect
 
         // 다시 8비트로 변환해서 원본에 복사
         result.ConvertTo(backgroundROI, MatType.CV_8UC3);
+    }
+
+    public void Dispose()
+    {
+        overlayBgr?.Dispose();
+        alphaMask?.Dispose();
     }
 }

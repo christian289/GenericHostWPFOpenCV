@@ -10,3 +10,5 @@ global using CommunityToolkit.Mvvm.Input;
 global using System.Diagnostics;
 global using System.Management;
 global using System.IO;
+global using OpenCvSharp.WpfExtensions;
+global using Microsoft.WindowsAPICodePack.Dialogs;

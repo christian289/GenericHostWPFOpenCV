@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="FaceMeshFastApiServer.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="NamedPipeFaceMeshServer.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

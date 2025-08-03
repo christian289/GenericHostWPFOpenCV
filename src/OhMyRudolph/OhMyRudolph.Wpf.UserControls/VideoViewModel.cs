@@ -2,7 +2,7 @@
 
 namespace OhMyRudolph.Wpf.UserControls;
 
-public partial class VideoViewModel : ObservableRecipient
+public partial class VideoViewModel : ObservableRecipient, IRecipient<PropertyChangedMessage<bool>>
 {
     private readonly ILogger<VideoViewModel> logger;
 
@@ -15,12 +15,18 @@ public partial class VideoViewModel : ObservableRecipient
         CameraManager = cameraManager;
         DetectingNoseViewModel = detectingNoseViewModel;
 
+        _effectAvailable = false;
         IsActive = true;
     }
 
     public CameraManager CameraManager { get; init; }
 
     public DetectingNoseViewModel DetectingNoseViewModel { get; init; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DrawingRudolphEffectCommand))]
+    [NotifyCanExecuteChangedFor(nameof(OverlayDeadpoolEffectCommand))]
+    bool _effectAvailable;
 
     [ObservableProperty]
     [NotifyPropertyChangedRecipients]
@@ -43,17 +49,30 @@ public partial class VideoViewModel : ObservableRecipient
         ApplyingOverlayDeadpoolEffect = false;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanDrawingRudolphEffect))]
     public void DrawingRudolphEffect()
     {
         ApplyingDrawingRudolphEffect = true;
         ApplyingOverlayDeadpoolEffect = false;
     }
 
-    [RelayCommand]
+    public bool CanDrawingRudolphEffect() => EffectAvailable;
+
+    [RelayCommand(CanExecute = nameof(CanOverlayDeadpoolEffect))]
     public void OverlayDeadpoolEffect()
     {
         ApplyingDrawingRudolphEffect = false;
         ApplyingOverlayDeadpoolEffect = true;
+    }
+
+    public bool CanOverlayDeadpoolEffect() => EffectAvailable;
+
+    public void Receive(PropertyChangedMessage<bool> message)
+    {
+        if (message.Sender is DetectingNoseViewModel &&
+            message.PropertyName == nameof(DetectingNoseViewModel.EffectApplyAvailable))
+        {
+            EffectAvailable = message.NewValue;
+        }
     }
 }

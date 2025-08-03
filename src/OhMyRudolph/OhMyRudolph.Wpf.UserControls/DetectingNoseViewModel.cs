@@ -34,6 +34,10 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
     [ObservableProperty]
     Mat? _printMat;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedRecipients]
+    bool _effectApplyAvailable;
+
     public void Receive(PropertyChangedMessage<CameraService> message)
     {
         if (message.PropertyName == nameof(CameraManager.SelectedCamera) && message.NewValue is not null)
@@ -80,7 +84,14 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
             .Subscribe(
                 onNext: async (mat) =>
                 {
-                    await ProcessImage(mat);
+                    try
+                    {
+                        await ProcessImage(mat);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
                 },
                 onError: (ex) =>
                 {
@@ -99,16 +110,22 @@ public partial class DetectingNoseViewModel : ObservableRecipient, IRecipient<Pr
 
         if (points is not null)
         {
+            EffectApplyAvailable = true;
+
             if (_applyingDrawingRudolphEffect)
             {
                 foreach (var (X, Y) in points)
-                    mat = drawingRudolphEffect.ProcessImage(mat, X, Y);
+                    mat = DrawingRudolphEffect.ProcessImage(mat, X, Y);
             }
             else if (_applyingOverlayDeadpoolEffect)
             {
                 foreach (var (X, Y) in points)
                     mat = overlayDeadpoolEffect.ProcessImage(mat, X, Y);
             }
+        }
+        else
+        {
+            EffectApplyAvailable = false;
         }
 
         PrintMat = mat;

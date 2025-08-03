@@ -2,7 +2,7 @@
 
 public sealed class DrawingRudolphEffect
 {
-    public Mat ProcessImage(Mat mat, int nosePointX, int nosePointY)
+    public static Mat ProcessImage(Mat mat, int nosePointX, int nosePointY)
     {
         if (mat.Empty())
             return mat;
