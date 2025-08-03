@@ -18,37 +18,69 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <local:DetectingNoseView Width="{StaticResource Width_DetectingNoseView}"
-                                 Height="{StaticResource Height_DetectingNoseView}"
-                                 DataContext="{Binding DetectingNoseViewModel}" />
-        <UniformGrid x:Name="ButtonSet"
-                     Width="{StaticResource Width_ButtonSet}"
-                     Height="{StaticResource Height_ButtonSet}"
-                     Margin="{StaticResource Margin_ButtonSet}"
-                     HorizontalAlignment="{StaticResource HorizontalAlignment_ButtonSet}"
-                     VerticalAlignment="{StaticResource VerticalAlignment_ButtonSet}"
-                     Columns="3">
-            <c:PhotoGrayEffectSelectionButton Background="#FF353535"
-                                              BorderBrush="#FF606060"
-                                              BorderThickness="2"
-                                              Command="{Binding NoEffectCommand}">
-                <iconPacks:PackIconTypicons Kind="Cancel" />
-            </c:PhotoGrayEffectSelectionButton>
-            <c:PhotoGrayEffectSelectionButton Background="#FF353535"
-                                              BorderBrush="#FF606060"
-                                              BorderThickness="2"
-                                              Command="{Binding DrawingRudolphEffectCommand}">
-                <Ellipse Width="30"
-                         Height="30"
-                         Fill="Red" />
-            </c:PhotoGrayEffectSelectionButton>
-            <c:PhotoGrayEffectSelectionButton Background="#FF353535"
-                                              BorderBrush="#FF606060"
-                                              BorderThickness="2"
-                                              Command="{Binding OverlayDeadpoolEffectCommand}">
-                <!--  OhMyRudolph.Core 어셈블리에 있는 deadpool.png는 Pack Uri 절대 경로로 접근해도 효과가 없었다.  -->
-                <Image Source="/OhMyRudolph.Wpf.UserControls;component/deadpool.png" />
-            </c:PhotoGrayEffectSelectionButton>
-        </UniformGrid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <local:DetectingNoseView Width="{StaticResource Width_DetectingNoseView}"
+                                     Height="{StaticResource Height_DetectingNoseView}"
+                                     DataContext="{Binding DetectingNoseViewModel}" />
+            <UniformGrid x:Name="ButtonSet"
+                         Width="{StaticResource Width_ButtonSet}"
+                         Height="{StaticResource Height_ButtonSet}"
+                         Margin="{StaticResource Margin_ButtonSet}"
+                         HorizontalAlignment="{StaticResource HorizontalAlignment_ButtonSet}"
+                         VerticalAlignment="{StaticResource VerticalAlignment_ButtonSet}"
+                         Columns="3">
+                <c:PhotoGrayEffectSelectionButton Background="{StaticResource Background_ButtonItem}"
+                                                  BorderBrush="{StaticResource BorderBursh_ButtonItem}"
+                                                  BorderThickness="{StaticResource BorderThickness_ButtonItem}"
+                                                  Command="{Binding NoEffectCommand}">
+                    <iconPacks:PackIconTypicons Kind="Cancel" />
+                </c:PhotoGrayEffectSelectionButton>
+                <c:PhotoGrayEffectSelectionButton Background="{StaticResource Background_ButtonItem}"
+                                                  BorderBrush="{StaticResource BorderBursh_ButtonItem}"
+                                                  BorderThickness="{StaticResource BorderThickness_ButtonItem}"
+                                                  Command="{Binding DrawingRudolphEffectCommand}">
+                    <Ellipse Width="{StaticResource WidthHeight_ButtonItemContent}"
+                             Height="{StaticResource WidthHeight_ButtonItemContent}"
+                             Fill="{StaticResource RudolphNoseColor}" />
+                </c:PhotoGrayEffectSelectionButton>
+                <c:PhotoGrayEffectSelectionButton Background="{StaticResource Background_ButtonItem}"
+                                                  BorderBrush="{StaticResource BorderBursh_ButtonItem}"
+                                                  BorderThickness="{StaticResource BorderThickness_ButtonItem}"
+                                                  Command="{Binding OverlayDeadpoolEffectCommand}">
+                    <!--  OhMyRudolph.Core 어셈블리에 있는 deadpool.png는 Pack Uri 절대 경로로 접근해도 효과가 없었다.  -->
+                    <Image Source="/OhMyRudolph.Wpf.UserControls;component/deadpool.png" />
+                </c:PhotoGrayEffectSelectionButton>
+            </UniformGrid>
+            <Rectangle x:Name="FlashEffect"
+                       Width="{StaticResource Width_DetectingNoseView}"
+                       Height="{StaticResource Height_DetectingNoseView}"
+                       Fill="White"
+                       IsHitTestVisible="False"
+                       Opacity="0"
+                       RenderTransformOrigin="0.5,0.5">
+                <Rectangle.RenderTransform>
+                    <ScaleTransform x:Name="FlashScale" ScaleX="1" ScaleY="1" />
+                </Rectangle.RenderTransform>
+            </Rectangle>
+        </Grid>
+        <Grid Grid.Row="0"
+              Grid.RowSpan="2"
+              HorizontalAlignment="{StaticResource HorizontalAlignment_PhotoShotButton}">
+            <c:PhotoGrayVideoViewPhotoShotButton Background="Wheat"
+                                                 Click="PhotoGrayVideoViewPhotoShotButton_Click"
+                                                 Command="{Binding PhotoShotCommand}">
+                <StackPanel>
+                    <TextBlock Margin="3,0,3,0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Text="찰칵~!" />
+                    <iconPacks:PackIconMaterialDesign HorizontalAlignment="Center" Kind="Camera" />
+                </StackPanel>
+            </c:PhotoGrayVideoViewPhotoShotButton>
+        </Grid>
     </Grid>
 </UserControl>

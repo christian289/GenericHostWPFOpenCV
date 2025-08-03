@@ -56,7 +56,7 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
             _pythonProcess.BeginErrorReadLine();
 
             logger.ZLogInformation($"FastAPI 서버 시작됨 (PID: {_pythonProcess.Id})");
-}
+        }
         catch (Exception ex)
         {
             logger.ZLogError(ex, $"FastAPI 서버 시작 실패");

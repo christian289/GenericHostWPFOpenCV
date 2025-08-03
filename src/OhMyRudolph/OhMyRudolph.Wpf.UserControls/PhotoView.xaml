@@ -32,7 +32,7 @@
         <Grid Grid.Row="0"
               Grid.Column="0"
               Grid.ColumnSpan="2"
-              Margin="20">
+              Margin="{StaticResource Margin_PageTitle}">
             <TextBlock HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        FontFamily="Malgun Gothic"
@@ -141,66 +141,59 @@
             <UniformGrid Grid.Row="1"
                          Grid.RowSpan="2"
                          Rows="4">
-                <c:PhotoGrayEffectSelectionButton Width="130"
-                                                  Height="130"
-                                                  Margin="5"
-                                                  Background="#FF353535"
-                                                  BorderBrush="#FF606060"
-                                                  BorderThickness="2"
-                                                  Command="{Binding LoadImageCommand}">
-                    <iconPacks:PackIconMaterialDesign Margin="1"
+                <UniformGrid.Resources>
+                    <Style TargetType="{x:Type c:PhotoGrayEffectSelectionButton}">
+                        <Setter Property="Width" Value="{StaticResource Width_EffectButtonSetItem}" />
+                        <Setter Property="Height" Value="{StaticResource Height_EffectButtonSetItem}" />
+                        <Setter Property="Margin" Value="{StaticResource Margin_EffectButtonSetItem}" />
+                        <Setter Property="Background" Value="{StaticResource Background_EffectButtonSetItem}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush_EffectButtonSetItem}" />
+                        <Setter Property="BorderThickness" Value="{StaticResource BorderThickness_EffectButtonSetItem}" />
+                    </Style>
+                </UniformGrid.Resources>
+                <c:PhotoGrayEffectSelectionButton Command="{Binding LoadImageCommand}">
+                    <iconPacks:PackIconMaterialDesign Width="{StaticResource Width_EffectButtonSetItemContent}"
+                                                      Height="{StaticResource Height_EffectButtonSetItemContent}"
+                                                      Margin="{StaticResource Margin_EffectButtonSetItemContent}"
                                                       HorizontalAlignment="Center"
                                                       Foreground="White"
                                                       Kind="FolderOpen" />
                 </c:PhotoGrayEffectSelectionButton>
-                <c:PhotoGrayEffectSelectionButton Width="130"
-                                                  Height="130"
-                                                  Margin="5"
-                                                  Background="#FF353535"
-                                                  BorderBrush="#FF606060"
-                                                  BorderThickness="2"
-                                                  Command="{Binding NoEffectCommand}">
-                    <iconPacks:PackIconTypicons Margin="1"
+                <c:PhotoGrayEffectSelectionButton Command="{Binding NoEffectCommand}">
+                    <iconPacks:PackIconTypicons Width="{StaticResource Width_EffectButtonSetItemContent}"
+                                                Height="{StaticResource Height_EffectButtonSetItemContent}"
+                                                Margin="{StaticResource Margin_EffectButtonSetItemContent}"
                                                 Foreground="White"
                                                 Kind="Cancel" />
                 </c:PhotoGrayEffectSelectionButton>
 
-                <c:PhotoGrayEffectSelectionButton Width="130"
-                                                  Height="130"
-                                                  Margin="5"
-                                                  Background="#FF353535"
-                                                  BorderBrush="#FF606060"
-                                                  BorderThickness="2"
-                                                  Command="{Binding ApplyDrawingRudolphEffectCommand}">
-                    <Ellipse Width="30"
-                             Height="30"
-                             Margin="5"
+                <c:PhotoGrayEffectSelectionButton Command="{Binding ApplyDrawingRudolphEffectCommand}">
+                    <Ellipse Width="{StaticResource Width_EffectButtonSetItemContent}"
+                             Height="{StaticResource Height_EffectButtonSetItemContent}"
+                             Margin="{StaticResource Margin_EffectButtonSetItemContent}"
                              Fill="Red" />
                 </c:PhotoGrayEffectSelectionButton>
 
-                <c:PhotoGrayEffectSelectionButton Width="130"
-                                                  Height="130"
-                                                  Margin="5"
-                                                  Background="#FF353535"
-                                                  BorderBrush="#FF606060"
-                                                  BorderThickness="2"
-                                                  Command="{Binding ApplyOverlayDeadpoolEffectCommand}">
-                    <Image Margin="100" Source="/OhMyRudolph.Wpf.UserControls;component/deadpool.png" />
+                <c:PhotoGrayEffectSelectionButton Command="{Binding ApplyOverlayDeadpoolEffectCommand}">
+                    <Image Width="{StaticResource Width_EffectButtonSetItemContent}"
+                           Height="{StaticResource Height_EffectButtonSetItemContent}"
+                           Margin="{StaticResource Margin_EffectButtonSetItemContent}"
+                           Source="/OhMyRudolph.Wpf.UserControls;component/deadpool.png" />
                 </c:PhotoGrayEffectSelectionButton>
             </UniformGrid>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="20,0,20,20">
+        <Grid Grid.Row="2" Margin="{StaticResource Margin_BottomButtonSet}">
             <StackPanel Grid.Row="1"
-                        HorizontalAlignment="Left"
-                        Orientation="Horizontal">
-                <c:PhotoGrayBackButton Width="150"
-                                       Height="40"
-                                       Margin="0,0,10,0"
+                        HorizontalAlignment="{StaticResource HorizontalAlignment_BottomButtonSet}"
+                        Orientation="{StaticResource Orientation_BottomButtonSet}">
+                <c:PhotoGrayBackButton Width="{StaticResource Width_BottomButtonSet}"
+                                       Height="{StaticResource Height_BottomButtonSet}"
+                                       Margin="{StaticResource Interval_BottomButtonSet}"
                                        Command="{Binding NavigateSelectModeCommand}" />
 
-                <c:PhotoGrayMainPageButton Width="150"
-                                           Height="40"
+                <c:PhotoGrayMainPageButton Width="{StaticResource Width_BottomButtonSet}"
+                                           Height="{StaticResource Height_BottomButtonSet}"
                                            Command="{Binding SaveImageCommand}"
                                            Content="이미지 저장"
                                            IsEnabled="{Binding ProcessedImage, Converter={cnvt:NullToBooleanConverter}}" />

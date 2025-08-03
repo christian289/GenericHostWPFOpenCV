@@ -37,6 +37,6 @@ public class PhotoGrayModeSelectionCardButton : Button
     }
 
     public static readonly DependencyProperty InternalMarginProperty =
-        DependencyProperty.Register("InternalMargin", typeof(Thickness), typeof(PhotoGrayModeSelectionCardButton), new PropertyMetadata(new Thickness(10,10,10,10)));
+        DependencyProperty.Register("InternalMargin", typeof(Thickness), typeof(PhotoGrayModeSelectionCardButton), new PropertyMetadata(new Thickness(10, 10, 10, 10)));
     #endregion
 }

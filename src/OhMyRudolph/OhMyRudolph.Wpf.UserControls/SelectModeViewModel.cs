@@ -1,6 +1,4 @@
-﻿using OhMyRudolph.Core.Managers;
-
-namespace OhMyRudolph.Wpf.UserControls;
+﻿namespace OhMyRudolph.Wpf.UserControls;
 
 public partial class SelectModeViewModel : ObservableRecipient
 {

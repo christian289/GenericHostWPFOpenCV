@@ -46,8 +46,8 @@ public sealed class OverlayDeadpoolEffect : IDisposable
         // 4. 리사이즈
         using var resizedOverlay = new Mat();
         using var resizedAlpha = new Mat();
-        Cv2.Resize(overlayBgr, resizedOverlay, new Size(overlaySize, overlaySize));
-        Cv2.Resize(alphaMask, resizedAlpha, new Size(overlaySize, overlaySize));
+        Cv2.Resize(overlayBgr, resizedOverlay, new OpenCvSharp.Size(overlaySize, overlaySize));
+        Cv2.Resize(alphaMask, resizedAlpha, new OpenCvSharp.Size(overlaySize, overlaySize));
 
         // 5. 간단한 알파 블렌딩 (OpenCV 함수 사용)
         ApplyOverlay(mat, resizedOverlay, resizedAlpha, startX, startY);

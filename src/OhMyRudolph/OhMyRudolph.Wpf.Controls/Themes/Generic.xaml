@@ -7,5 +7,6 @@
         <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGrayMainPageButton.xaml" />
         <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGrayModeSelectionCardButton.xaml" />
         <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGraySpeechBubble.xaml" />
+        <ResourceDictionary Source="/OhMyRudolph.Wpf.Controls;component/Themes/PhotoGrayVideoViewPhotoShotButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

@@ -148,12 +148,14 @@ public sealed class FaceMeshClient(ILogger<FaceMeshClient> logger)
             catch (JsonException ex)
             {
                 logger.ZLogError(ex, $"[JSON 파싱 실패] 원본: {resultJson}");
+                //throw;
                 return [];
             }
         }
         catch (Exception ex)
         {
             logger.ZLogError(ex, $"파이프 통신 중 예외 발생");
+            //throw;
             return [];
         }
     }

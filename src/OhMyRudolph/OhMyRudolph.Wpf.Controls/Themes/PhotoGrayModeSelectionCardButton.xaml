@@ -22,7 +22,7 @@
                         <Grid>
                             <Grid.Resources>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="FontFamily" Value="{StaticResource FontFamily_PhotoGrayModeSelectionCardButton}" />
+                                    <Setter Property="FontFamily" Value="{StaticResource GlobalFont}" />
                                     <Setter Property="FontSize" Value="{StaticResource FontSize_PhotoGrayModeSelectionCardButton}" />
                                     <Setter Property="FontWeight" Value="{StaticResource FontWeight_PhotoGrayModeSelectionCardButton}" />
                                     <Setter Property="VerticalAlignment" Value="{StaticResource VerticalAlignment_PhotoGrayModeSelectionCardButton}" />

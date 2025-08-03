@@ -21,7 +21,7 @@
         <Grid.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource Brush_Foreground_ReadyScreen}" />
-                <Setter Property="FontFamily" Value="{StaticResource FontFamily_ReadyScreen}" />
+                <Setter Property="FontFamily" Value="{StaticResource GlobalFont}" />
                 <Setter Property="FontWeight" Value="{StaticResource FontWeight_ReadyScreen}" />
                 <Setter Property="VerticalAlignment" Value="{StaticResource VerticalAlignment_ReadyScreen}" />
                 <Setter Property="HorizontalAlignment" Value="{StaticResource HorizontalAlignment_ReadyScreen}" />
@@ -43,7 +43,7 @@
                                          Height="50"
                                          Margin="{StaticResource Margin_ReadyScreen_PhotoGraySpeechBubble}"
                                          HorizontalAlignment="{StaticResource HorizontalAlignment_ReadyScreen_PhotoGraySpeechBubble}"
-                                         FontFamily="{StaticResource FontFamily_ReadyScreen}"
+                                         FontFamily="{StaticResource GlobalFont}"
                                          FontWeight="{StaticResource FontWeight_ReadyScreen}"
                                          PathStroke="{StaticResource Brush_PathStroke_ReadyScreen}"
                                          PathThickness="{StaticResource PathThickness_ReadyScreen}"

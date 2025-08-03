@@ -13,7 +13,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource Brush_BorderBrush_PhotoGrayMainPageButton}" />
         <Setter Property="Background" Value="{StaticResource Brush_Background_PhotoGrayMainPageButton}" />
         <Setter Property="BorderThickness" Value="{StaticResource Thickness_PhotoGrayMainPageButton}" />
-        <Setter Property="FontFamily" Value="{StaticResource FontFamily_PhotoGrayMainPageButton}" />
+        <Setter Property="FontFamily" Value="{StaticResource GlobalFont}" />
         <Setter Property="FontSize" Value="{StaticResource FontSize_PhotoGrayMainPageButton}" />
         <Setter Property="FontWeight" Value="{StaticResource FontWeight_PhotoGrayMainPageButton}" />
         <Setter Property="Foreground" Value="{StaticResource Brush_Foreground_PhotoGrayMainPageButton}" />

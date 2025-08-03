@@ -1,5 +1,6 @@
 ﻿using OhMyRudolph.Core.Clients;
 using OhMyRudolph.Core.Effects;
+using OhMyRudolph.Core.Helpers;
 using OhMyRudolph.Core.Models;
 
 namespace OhMyRudolph.Wpf.UserControls;
@@ -35,8 +36,8 @@ public partial class PhotoViewModel : ObservableRecipient
                 Title = "이미지 파일 선택",
                 RestoreDirectory = true
             };
-            openFileDialog.Filters.Add(new CommonFileDialogFilter("이미지 파일 (*.jpg;*.jpeg;*.png;*.bmp)", "*.jpg;*.jpeg;*.png;*.bmp"));
-            openFileDialog.Filters.Add(new CommonFileDialogFilter("모든 파일 (*.*)", "*.*"));
+            openFileDialog.Filters.Add(new CommonFileDialogFilter("이미지 파일", "*.jpg;*.jpeg;*.png;*.bmp"));
+            openFileDialog.Filters.Add(new CommonFileDialogFilter("모든 파일", "*.*"));
 
             if (openFileDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
@@ -49,7 +50,6 @@ public partial class PhotoViewModel : ObservableRecipient
                     return;
                 }
 
-                // WPF용 WriteableBitmap으로 변환
                 OriginalImage?.Dispose();
                 OriginalImage = _originalMat;
                 ProcessedImage?.Dispose();
@@ -148,6 +148,7 @@ public partial class PhotoViewModel : ObservableRecipient
         if (ProcessedImage == null)
         {
             logger.ZLogWarning($"저장할 이미지가 없습니다.");
+
             return;
         }
 
@@ -156,17 +157,23 @@ public partial class PhotoViewModel : ObservableRecipient
             var saveFileDialog = new CommonSaveFileDialog
             {
                 Title = "이미지 저장",
-                DefaultExtension = "png",
+                DefaultExtension = ".png",
             };
-            saveFileDialog.Filters.Add(new CommonFileDialogFilter("PNG 파일 (*.png)", "*.png"));
-            saveFileDialog.Filters.Add(new CommonFileDialogFilter("JPEG 파일 (*.jpg)", "*.jpg"));
-            saveFileDialog.Filters.Add(new CommonFileDialogFilter("BMP 파일 (*.bmp)", "*.bmp"));
+            saveFileDialog.Filters.Add(new CommonFileDialogFilter("PNG 파일", "*.png"));
+            saveFileDialog.Filters.Add(new CommonFileDialogFilter("JPEG 파일", "*.jpg"));
+            saveFileDialog.Filters.Add(new CommonFileDialogFilter("BMP 파일", "*.bmp"));
 
             if (saveFileDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                // WriteableBitmap을 파일로 저장
-                using var fileStream = new FileStream(saveFileDialog.FileName!, FileMode.Create);
-                ProcessedImage.SaveImage(saveFileDialog.FileName!);
+                var ext = Path.GetExtension(saveFileDialog.FileName!);
+                ImageFormat imageFormat = ext.ToLower() switch
+                {
+                    ".png" => ImageFormat.Png,
+                    ".jpg" => ImageFormat.Jpeg,
+                    ".bmp" => ImageFormat.Bmp,
+                    _ => ImageFormat.Jpeg
+                };
+                MatToBitmapSaver.SaveMatAsBitmap(ProcessedImage, saveFileDialog.FileName!, imageFormat);
 
                 logger.ZLogInformation($"이미지 저장 완료: {saveFileDialog.FileName}");
             }
@@ -181,6 +188,10 @@ public partial class PhotoViewModel : ObservableRecipient
     public void NavigateSelectMode()
     {
         client.StopPythonServer();
+        OriginalImage?.Dispose();
+        OriginalImage = null;
+        ProcessedImage?.Dispose();
+        ProcessedImage = null;
         Messenger.Send(new ValueChangedMessage<string>(nameof(SelectModeViewModel)));
     }
 }

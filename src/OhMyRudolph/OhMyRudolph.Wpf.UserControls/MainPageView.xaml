@@ -8,9 +8,16 @@
              d:DesignHeight="450"
              d:DesignWidth="800"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf.Core;component/ControlTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
-        <c:PhotoGrayMainPageButton Width="400"
-                                   Height="50"
+        <c:PhotoGrayMainPageButton Width="{StaticResource Width_PhotoGrayMainPageButton}"
+                                   Height="{StaticResource Height_PhotoGrayMainPageButton}"
                                    Command="{Binding NavigateSelectModeCommand}"
                                    Content="루돌프 코 시작하기" />
     </Grid>

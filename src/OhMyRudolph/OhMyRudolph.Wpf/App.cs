@@ -31,6 +31,7 @@ internal sealed class App : Application
                 services.AddSingleton<CameraManager>();
                 services.AddSingleton<FastApiFaceMeshClient>();
                 services.AddSingleton<FaceMeshClient>();
+                services.AddSingleton<FinalPageViewModel>();
                 services.AddSingleton<DetectingNoseViewModel>();
                 services.AddSingleton<ReadyScreenViewModel>();
                 services.AddSingleton<VideoViewModel>();
