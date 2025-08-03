@@ -16,4 +16,7 @@
     <DataTemplate DataType="{x:Type uc:ReadyScreenViewModel}">
         <uc:ReadyScreen />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type uc:FinalPageViewModel}">
+        <uc:FinalPageView />
+    </DataTemplate>
 </ResourceDictionary>

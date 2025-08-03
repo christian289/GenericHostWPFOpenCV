@@ -1,6 +1,4 @@
-﻿using OhMyRudolph.Core.Managers;
-
-namespace OhMyRudolph.Wpf.UserControls;
+﻿namespace OhMyRudolph.Wpf.UserControls;
 
 public partial class SelectModeViewModel : ObservableRecipient
 {
@@ -51,8 +49,9 @@ public partial class SelectModeViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    public void NavigatePhotoView()
+    public async Task NavigatePhotoView()
     {
+        await KillPythonProcessesViaWmiAsync();
         Messenger.Send(new ValueChangedMessage<string>(nameof(PhotoViewModel)));
     }
 

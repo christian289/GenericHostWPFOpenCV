@@ -1,6 +1,6 @@
 ﻿namespace OhMyRudolph.Core.Effects;
 
-public sealed class OverlayDeadpoolEffect
+public sealed class OverlayDeadpoolEffect : IDisposable
 {
     private readonly Mat? overlayBgr;
     private readonly Mat? alphaMask;
@@ -46,8 +46,8 @@ public sealed class OverlayDeadpoolEffect
         // 4. 리사이즈
         using var resizedOverlay = new Mat();
         using var resizedAlpha = new Mat();
-        Cv2.Resize(overlayBgr, resizedOverlay, new Size(overlaySize, overlaySize));
-        Cv2.Resize(alphaMask, resizedAlpha, new Size(overlaySize, overlaySize));
+        Cv2.Resize(overlayBgr, resizedOverlay, new OpenCvSharp.Size(overlaySize, overlaySize));
+        Cv2.Resize(alphaMask, resizedAlpha, new OpenCvSharp.Size(overlaySize, overlaySize));
 
         // 5. 간단한 알파 블렌딩 (OpenCV 함수 사용)
         ApplyOverlay(mat, resizedOverlay, resizedAlpha, startX, startY);
@@ -88,5 +88,11 @@ public sealed class OverlayDeadpoolEffect
 
         // 다시 8비트로 변환해서 원본에 복사
         result.ConvertTo(backgroundROI, MatType.CV_8UC3);
+    }
+
+    public void Dispose()
+    {
+        overlayBgr?.Dispose();
+        alphaMask?.Dispose();
     }
 }

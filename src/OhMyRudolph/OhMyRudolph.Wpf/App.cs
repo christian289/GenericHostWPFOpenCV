@@ -29,7 +29,9 @@ internal sealed class App : Application
             .ConfigureServices((context, services) =>
             {
                 services.AddSingleton<CameraManager>();
+                services.AddSingleton<FastApiFaceMeshClient>();
                 services.AddSingleton<FaceMeshClient>();
+                services.AddSingleton<FinalPageViewModel>();
                 services.AddSingleton<DetectingNoseViewModel>();
                 services.AddSingleton<ReadyScreenViewModel>();
                 services.AddSingleton<VideoViewModel>();
@@ -42,6 +44,8 @@ internal sealed class App : Application
                 // 나중에 Effect는 DLL로 빼서 Plugin 형태면 좋을듯.
                 services.AddSingleton<DrawingRudolphEffect>();
                 services.AddSingleton<OverlayDeadpoolEffect>();
+
+                services.AddHttpClient<FastApiFaceMeshClient>();
             })
             .Build();
 

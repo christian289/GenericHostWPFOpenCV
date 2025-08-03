@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="OhMyRudolph.Wpf.UserControls.FinalPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:OhMyRudolph.Wpf.Controls;assembly=OhMyRudolph.Wpf.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:OhMyRudolph.Wpf.UserControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:Background="Black"
+             d:DataContext="{d:DesignInstance local:FinalPageViewModel}"
+             d:DesignHeight="720"
+             d:DesignWidth="1280"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf.Core;component/ControlTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource Brush_Foreground_FinalPageView}" />
+                <Setter Property="FontFamily" Value="{StaticResource GlobalFont}" />
+                <Setter Property="FontWeight" Value="{StaticResource FontWeight_FinalPageView}" />
+                <Setter Property="VerticalAlignment" Value="{StaticResource VerticalAlignment_FinalPageView}" />
+                <Setter Property="HorizontalAlignment" Value="{StaticResource HorizontalAlignment_FinalPageView}" />
+            </Style>
+        </Grid.Resources>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock FontSize="{StaticResource FontSize_FinalPageView_Thankyou}" Text="이용해주셔서 감사합니다" />
+            <TextBlock FontSize="{StaticResource FontSize_FinalPageView_Seeyou}" Text="5초 뒤 메인 화면으로 이동합니다." />
+        </StackPanel>
+    </Grid>
+</UserControl>

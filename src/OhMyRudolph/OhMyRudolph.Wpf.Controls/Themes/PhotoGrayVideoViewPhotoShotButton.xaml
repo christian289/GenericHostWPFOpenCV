@@ -9,17 +9,17 @@
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
-    <Style TargetType="{x:Type local:PhotoGrayEffectSelectionButton}">
-        <Setter Property="Width" Value="{StaticResource WidthHeight_PhotoGrayEffectSelectionButton}" />
-        <Setter Property="Height" Value="{StaticResource WidthHeight_PhotoGrayEffectSelectionButton}" />
+    <Style TargetType="{x:Type local:PhotoGrayVideoViewPhotoShotButton}">
+        <Setter Property="Width" Value="{StaticResource Width_PhotoGrayVideoViewPhotoShotButton}" />
+        <Setter Property="Height" Value="{StaticResource Height_PhotoGrayVideoViewPhotoShotButton}" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:PhotoGrayEffectSelectionButton}">
+                <ControlTemplate TargetType="{x:Type local:PhotoGrayVideoViewPhotoShotButton}">
                     <Border x:Name="PART_Border"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource CornerRadius_PhotoGrayEffectSelectionButton}">
+                            CornerRadius="{StaticResource CornerRadius_PhotoGrayVideoViewPhotoShotButton}">
                         <Viewbox>
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
