@@ -1,38 +1,39 @@
-# OhMyRudolph
-- º» ÇÁ·ÎÁ§Æ®´Â APR Windows °³¹ßÀÚ JD ¼­·ù ÀüÇü ÇÕ°ÝÀÚ¸¦ ´ë»óÀ¸·ÎÇÑ °úÁ¦ °á°ú¹°ÀÔ´Ï´Ù.
-- °³¹ß ±â°£: 2025³â 7¿ù 28ÀÏ ~ 8¿ù 3ÀÏ
+ï»¿# OhMyRudolph
+- GitHub ì €ìž¥ì†Œ ì£¼ì†Œ: https://github.com/christian289/GenericHostWPFOpenCV/tree/main/src/OhMyRudolph
+- ë³¸ í”„ë¡œì íŠ¸ëŠ” APR Windows ê°œë°œìž JD ì„œë¥˜ ì „í˜• í•©ê²©ìžë¥¼ ëŒ€ìƒìœ¼ë¡œí•œ ê³¼ì œ ê²°ê³¼ë¬¼ìž…ë‹ˆë‹¤.
+- ê°œë°œ ê¸°ê°„: 2025ë…„ 7ì›” 28ì¼ ~ 8ì›” 3ì¼
 
-## Æ¯Â¡
-- Generic Host(Microsoft.Extensions.Hosting)À» »ç¿ëÇÑ ViewModel ¶óÀÌÇÁ »çÀÌÅ¬ °ü¸®
-- System.Reative¸¦ »ç¿ëÇÑ °¡µ¶¼º ÀÖ´Â Stream Á¦¾î
-- WPF Ãø¸é¿¡¼­ÀÇ Clean Architecture Àû¿ë.
-- CustomControl°ú ThemeÄÁ¼ÁÀ¸·Î °³¹ßÇÏ¿© ¿£ÅÍÇÁ¶óÀÌÁî ¾îÇÃ¸®ÄÉÀÌ¼ÇÀÇ ±â¹ÝÀÌ µÉ ¼ö ÀÖ´Â À¯Áöº¸¼ö ±¸Á¶¸¦ °®Ãã
-- »çÁø ´Ü°Ç Ã³¸®´Â FastAPI ±â¹ÝÀÇ Python Local ¼­¹ö¸¦ ¶ç¿ö Ã³¸®
-- ¶óÀÌºê ½ºÆ®¸² Ã³¸®´Â Windows Named Pipe Åë½ÅÀ» »ç¿ë
-- Python MediaPipeÀÇ FaceMesh ±â´ÉÀ» »ç¿ëÇÏ¿© ÄÚÀÇ ÁÂÇ¥¸¦ ¾ò¾î¿È.
-- Á¤ÀûÀÎ ÇüÅÂ·Î µðÀÚÀÎ Å¸ÀÓÀ» È°¿ëÇÏ¿© °³¹ß(d:DesignInstance, d:DataContext)
-- CommunityToolkit.MvvmÀÇ Messenger¸¦ ÅëÇÑ Event Aggregator ÆÐÅÏÀ» ÅëÇØ ViewModel¸¸À» Á¦¾îÇÔÀ¸·Î½á À¯¿¬ÇÑ Navigation ±¸Á¶¸¦ °®°í ÀÖÀ½. (View¸¦ ¸Å¹ø »ý¼ºÇÏ´Â ¿À¹öÇìµå´Â Á¸ÀçÇÔ)
+## íŠ¹ì§•
+- Generic Host(Microsoft.Extensions.Hosting)ì„ ì‚¬ìš©í•œ ViewModel ë¼ì´í”„ ì‚¬ì´í´ ê´€ë¦¬
+- System.Reativeë¥¼ ì‚¬ìš©í•œ ê°€ë…ì„± ìžˆëŠ” Stream ì œì–´
+- WPF ì¸¡ë©´ì—ì„œì˜ Clean Architecture ì ìš©.
+- CustomControlê³¼ Themeì»¨ì…‰ìœ¼ë¡œ ê°œë°œí•˜ì—¬ ì—”í„°í”„ë¼ì´ì¦ˆ ì–´í”Œë¦¬ì¼€ì´ì…˜ì˜ ê¸°ë°˜ì´ ë  ìˆ˜ ìžˆëŠ” ìœ ì§€ë³´ìˆ˜ êµ¬ì¡°ë¥¼ ê°–ì¶¤
+- ì‚¬ì§„ ë‹¨ê±´ ì²˜ë¦¬ëŠ” FastAPI ê¸°ë°˜ì˜ Python Local ì„œë²„ë¥¼ ë„ì›Œ ì²˜ë¦¬
+- ë¼ì´ë¸Œ ìŠ¤íŠ¸ë¦¼ ì²˜ë¦¬ëŠ” Windows Named Pipe í†µì‹ ì„ ì‚¬ìš©
+- Python MediaPipeì˜ FaceMesh ê¸°ëŠ¥ì„ ì‚¬ìš©í•˜ì—¬ ì½”ì˜ ì¢Œí‘œë¥¼ ì–»ì–´ì˜´.
+- ì •ì ì¸ í˜•íƒœë¡œ ë””ìžì¸ íƒ€ìž„ì„ í™œìš©í•˜ì—¬ ê°œë°œ(d:DesignInstance, d:DataContext)
+- CommunityToolkit.Mvvmì˜ Messengerë¥¼ í†µí•œ Event Aggregator íŒ¨í„´ì„ í†µí•´ ViewModelë§Œì„ ì œì–´í•¨ìœ¼ë¡œì¨ ìœ ì—°í•œ Navigation êµ¬ì¡°ë¥¼ ê°–ê³  ìžˆìŒ. (Viewë¥¼ ë§¤ë²ˆ ìƒì„±í•˜ëŠ” ì˜¤ë²„í—¤ë“œëŠ” ì¡´ìž¬í•¨)
 
-## °³¼±Á¡
-- ´Ù¼öÀÇ Ä«¸Þ¶óÀÏ °æ¿ì Ä«¸Þ¶ó¸¦ ¼±ÅÃÇÏ°í °ü¸®ÇÒ ¼ö ÀÖ´Â °ü¸®ÀÚ ÆäÀÌÁö ÇÊ¿ä
-- °ü¸®ÀÚ ÆäÀÌÁö¿¡¼­ Log Viewer Á¦°ø
-- ´Ù¾çÇÑ ¾ó±¼ ÇÊÅÍÀûÀÎ ½Ã°¢Àû È¿°ú¸¦ ClientÀÎ WPF¿¡¼­ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï MEF¿Í °°Àº Plugin ±¸Á¶·Î È¿°ú¸¦ º°µµ Á¦°øÇÏ¿© µ¥½ºÅ©Åé ¾ÛÀÇ ¾÷µ¥ÀÌÆ® ÇÑ°èÁ¡ ±Øº¹
-- NSIS, Wix µî ÆÐÅ°Â¡ ÇÊ¿ä
-- °£ÇæÀûÀ¸·Î WPF ¾îÇÃ¸®ÄÉÀÌ¼Ç°ú Python ·ÎÄÃ ¼­¹ö¿Í Windows Named Pipe Åë½Å ½Ã Àå¾Ö ¹ß»ý.
-- ¶óÀÌºê ½ºÆ®¸² È­¸é UI Àç±¸¼º ÇÊ¿ä
+## ê°œì„ ì 
+- ë‹¤ìˆ˜ì˜ ì¹´ë©”ë¼ì¼ ê²½ìš° ì¹´ë©”ë¼ë¥¼ ì„ íƒí•˜ê³  ê´€ë¦¬í•  ìˆ˜ ìžˆëŠ” ê´€ë¦¬ìž íŽ˜ì´ì§€ í•„ìš”
+- ê´€ë¦¬ìž íŽ˜ì´ì§€ì—ì„œ Log Viewer ì œê³µ
+- ë‹¤ì–‘í•œ ì–¼êµ´ í•„í„°ì ì¸ ì‹œê°ì  íš¨ê³¼ë¥¼ Clientì¸ WPFì—ì„œ ì²˜ë¦¬í•  ìˆ˜ ìžˆë„ë¡ MEFì™€ ê°™ì€ Plugin êµ¬ì¡°ë¡œ íš¨ê³¼ë¥¼ ë³„ë„ ì œê³µí•˜ì—¬ ë°ìŠ¤í¬í†± ì•±ì˜ ì—…ë°ì´íŠ¸ í•œê³„ì  ê·¹ë³µ
+- NSIS, Wix ë“± íŒ¨í‚¤ì§• í•„ìš”
+- ê°„í—ì ìœ¼ë¡œ WPF ì–´í”Œë¦¬ì¼€ì´ì…˜ê³¼ Python ë¡œì»¬ ì„œë²„ì™€ Windows Named Pipe í†µì‹  ì‹œ ìž¥ì•  ë°œìƒ.
+- ë¼ì´ë¸Œ ìŠ¤íŠ¸ë¦¼ í™”ë©´ UI ìž¬êµ¬ì„± í•„ìš”
 
-## ÇÁ·ÎÁ§Æ® ±¸Á¶
-- OhMyRudolph.Abstractions: º» ¼Ö·ç¼ÇÀÇ Root°¡ µÇ´Â Ãß»óÈ­ °èÃþÀ» Á¤ÀÇÇÑ °ÍÀ¸·Î ÇöÀç Å©°Ô »ç¿ëµÇÁö ¾Ê¾ÒÁö¸¸, ÃßÈÄ À¯Áöº¸¼ö Áß ÀÇÁ¸¼º ¹®Á¦°¡ ¹ß»ýÇÒ °æ¿ì ÀÌ ÇÁ·ÎÁ§Æ®¸¦ ÅëÇØ Interface¸¦ Á¤ÀÇÇÏ¿© MVVM ÀÇÁ¸ ¹®Á¦ ÇØ°á °¡´É.
-- OhMyRudolph.Core: º» ¼Ö·ç¼ÇÀÇ ±â´ÉÀûÀÎ ºÎºÐ¿¡¼­ÀÇ ÇÙ½É ±â´ÉÀ» °®°í ÀÖ´Â ÇÁ·ÎÁ§Æ®.
-- OhMyRudolph.Wpf: º» ¼Ö·ç¼ÇÀÇ ½ÇÇà °¡´ÉÇÑ WPF ÇÁ·ÎÁ§Æ®·Î, ÀÇÁ¸ °èÃþÀÇ ÃÖÇÏ´Ü¿¡¼­ µ¿ÀÛ
-- OhMyRudolph.Wpf.Controls: WPF »ç¿ëÀÚ **ÁöÁ¤** ÄÁÆ®·Ñ ¶óÀÌºê·¯¸® ÇÁ·ÎÁ§Æ®(CustomControl). ÆäÀÌÁö¸¦ ±¸¼ºÇÒ ¶§ »ç¿ëÇÒ Theme°¡ Àû¿ëµÈ ÄÁÆ®·Ñ·Î, UIÀûÀ¸·Î °¡Àå ÀÛÀº ´ÜÀ§
-- OhMyRudolph.Wpf.Core: UIÀûÀÎ ºÎºÐ¿¡¼­ÀÇ ÇÙ½É ±â´ÉÀ» °®°í ÀÖ´Â ÇÁ·ÎÁ§Æ®·Î, ÇöÀç´Â Converter Á¤µµ¸¸ ÀÖÁö¸¸ ÃßÈÄ ´Ù¾çÇÑ ExtensionÀ» Ãß°¡ÇÏ¿© À¯¿¬ÇÏ°Ô »ç¿ë °¡´É.
-- OhMyRudolPh.Wpf.UserControls: WPF »ç¿ëÀÚ **Á¤ÀÇ** ÄÁÆ®·Ñ ¶óÀÌºê·¯¸® ÇÁ·ÎÁ§Æ®(UserControl). UserControl ÀÌÁö¸¸, Page·Î¼­ÀÇ ±â´ÉÀ» ÇÏ°í ÀÖ±â¿¡ È­¸éÀ» ±¸¼ºÇÒ ‹š »ç¿ë. UI Navigation½Ã Page ¹× Frame ÄÁÆ®·ÑÀº »ç¿ëÇÏÁö ¾ÊÀ½.
+## í”„ë¡œì íŠ¸ êµ¬ì¡°
+- OhMyRudolph.Abstractions: ë³¸ ì†”ë£¨ì…˜ì˜ Rootê°€ ë˜ëŠ” ì¶”ìƒí™” ê³„ì¸µì„ ì •ì˜í•œ ê²ƒìœ¼ë¡œ í˜„ìž¬ í¬ê²Œ ì‚¬ìš©ë˜ì§€ ì•Šì•˜ì§€ë§Œ, ì¶”í›„ ìœ ì§€ë³´ìˆ˜ ì¤‘ ì˜ì¡´ì„± ë¬¸ì œê°€ ë°œìƒí•  ê²½ìš° ì´ í”„ë¡œì íŠ¸ë¥¼ í†µí•´ Interfaceë¥¼ ì •ì˜í•˜ì—¬ MVVM ì˜ì¡´ ë¬¸ì œ í•´ê²° ê°€ëŠ¥.
+- OhMyRudolph.Core: ë³¸ ì†”ë£¨ì…˜ì˜ ê¸°ëŠ¥ì ì¸ ë¶€ë¶„ì—ì„œì˜ í•µì‹¬ ê¸°ëŠ¥ì„ ê°–ê³  ìžˆëŠ” í”„ë¡œì íŠ¸.
+- OhMyRudolph.Wpf: ë³¸ ì†”ë£¨ì…˜ì˜ ì‹¤í–‰ ê°€ëŠ¥í•œ WPF í”„ë¡œì íŠ¸ë¡œ, ì˜ì¡´ ê³„ì¸µì˜ ìµœí•˜ë‹¨ì—ì„œ ë™ìž‘
+- OhMyRudolph.Wpf.Controls: WPF ì‚¬ìš©ìž **ì§€ì •** ì»¨íŠ¸ë¡¤ ë¼ì´ë¸ŒëŸ¬ë¦¬ í”„ë¡œì íŠ¸(CustomControl). íŽ˜ì´ì§€ë¥¼ êµ¬ì„±í•  ë•Œ ì‚¬ìš©í•  Themeê°€ ì ìš©ëœ ì»¨íŠ¸ë¡¤ë¡œ, UIì ìœ¼ë¡œ ê°€ìž¥ ìž‘ì€ ë‹¨ìœ„
+- OhMyRudolph.Wpf.Core: UIì ì¸ ë¶€ë¶„ì—ì„œì˜ í•µì‹¬ ê¸°ëŠ¥ì„ ê°–ê³  ìžˆëŠ” í”„ë¡œì íŠ¸ë¡œ, í˜„ìž¬ëŠ” Converter ì •ë„ë§Œ ìžˆì§€ë§Œ ì¶”í›„ ë‹¤ì–‘í•œ Extensionì„ ì¶”ê°€í•˜ì—¬ ìœ ì—°í•˜ê²Œ ì‚¬ìš© ê°€ëŠ¥.
+- OhMyRudolPh.Wpf.UserControls: WPF ì‚¬ìš©ìž **ì •ì˜** ì»¨íŠ¸ë¡¤ ë¼ì´ë¸ŒëŸ¬ë¦¬ í”„ë¡œì íŠ¸(UserControl). UserControl ì´ì§€ë§Œ, Pageë¡œì„œì˜ ê¸°ëŠ¥ì„ í•˜ê³  ìžˆê¸°ì— í™”ë©´ì„ êµ¬ì„±í•  ë–„ ì‚¬ìš©. UI Navigationì‹œ Page ë° Frame ì»¨íŠ¸ë¡¤ì€ ì‚¬ìš©í•˜ì§€ ì•ŠìŒ.
 
-## °³¹ß È¯°æ
+## ê°œë°œ í™˜ê²½
 - Windows 10
 - .NET 9 WPF
-- Visual Studio 2022 17.14.9 (.slnx ÆÄÀÏ Áö¿øÀ» À§ÇØ ÇÊ¿ä)
+- Visual Studio 2022 17.14.9 (.slnx íŒŒì¼ ì§€ì›ì„ ìœ„í•´ í•„ìš”)
 - mediapipe 0.10.21
 - opencv-contrib-python 4.11.0.86
 - opencv-python 4.12.0.88
@@ -42,15 +43,15 @@
 - python-multipart 0.0.20
 - uvicorn 0.35.0
 
-## ½ÇÇà ¹æ¹ý
-1. GitHub ¿¡¼­ Clone
-2. .NET 9¸¦ ¼³Ä¡ÇÑ µÚ .slnx ÆÄÀÏÀ» ·ÎµåÇÒ ¼ö ÀÖ´Â Visual Studio 2022 ¹öÀüÀ¸·Î ½ÇÇà
-3. ½ÃÀÛ ÇÁ·ÎÁ§Æ® **OhMyRudolph.Wpf** ·Î ¼³Á¤
-4. Ä«¸Þ¶ó ÀåÄ¡ ¿¬°á ÈÄ ÇÁ·ÎÁ§Æ® µð¹ö±ë
-5. ¶Ç´Â ºôµå °æ·Î¿¡¼­ OhMyRudolph.Wpf.exe ½ÇÇà
+## ì‹¤í–‰ ë°©ë²•
+1. GitHub ì—ì„œ Clone
+2. .NET 9ë¥¼ ì„¤ì¹˜í•œ ë’¤ .slnx íŒŒì¼ì„ ë¡œë“œí•  ìˆ˜ ìžˆëŠ” Visual Studio 2022 ë²„ì „ìœ¼ë¡œ ì‹¤í–‰
+3. ì‹œìž‘ í”„ë¡œì íŠ¸ **OhMyRudolph.Wpf** ë¡œ ì„¤ì •
+4. ì¹´ë©”ë¼ ìž¥ì¹˜ ì—°ê²° í›„ í”„ë¡œì íŠ¸ ë””ë²„ê¹…
+5. ë˜ëŠ” ë¹Œë“œ ê²½ë¡œì—ì„œ OhMyRudolph.Wpf.exe ì‹¤í–‰
 
-## Claude AI¸¦ »ç¿ëÇÑ ºÎºÐ
-- Python ÄÚµå ÀÛ¼º
-- OpenCV¸¦ »ç¿ëÇÏ´Â ¿µ»óÃ³¸® Áö½Ä Àü¹Ý
+## Claude AIë¥¼ ì‚¬ìš©í•œ ë¶€ë¶„
+- Python ì½”ë“œ ìž‘ì„±
+- OpenCVë¥¼ ì‚¬ìš©í•˜ëŠ” ì˜ìƒì²˜ë¦¬ ì§€ì‹ ì „ë°˜
 - System.Reactive Operator
-- Windows Named Pipe Åë½Å Àü¹Ý
+- Windows Named Pipe í†µì‹  ì „ë°˜
