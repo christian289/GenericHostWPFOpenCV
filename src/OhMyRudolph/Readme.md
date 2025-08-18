@@ -1,6 +1,5 @@
 ﻿# OhMyRudolph
 - GitHub 저장소 주소: https://github.com/christian289/GenericHostWPFOpenCV/tree/main/src/OhMyRudolph
-- 본 프로젝트는 APR Windows 개발자 JD 서류 전형 합격자를 대상으로한 과제 결과물입니다.
 - 개발 기간: 2025년 7월 28일 ~ 8월 3일
 
 ## 특징
