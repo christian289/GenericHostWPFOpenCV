@@ -18,6 +18,7 @@
     <Grid Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
         <c:PhotoGrayMainPageButton Width="{StaticResource Width_PhotoGrayMainPageButton}"
                                    Height="{StaticResource Height_PhotoGrayMainPageButton}"
+                                   AutomationProperties.AutomationId="Main.Begin"
                                    Command="{Binding NavigateSelectModeCommand}"
                                    Content="루돌프 코 시작하기" />
     </Grid>

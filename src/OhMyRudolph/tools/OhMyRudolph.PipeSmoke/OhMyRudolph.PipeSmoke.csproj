@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../OhMyRudolph.Core/OhMyRudolph.Core.csproj" />
+    <None Include="../../OhMyRudolph.Wpf/NamedPipeFaceMeshServer.py" Link="NamedPipeFaceMeshServer.py" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

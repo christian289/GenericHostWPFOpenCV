@@ -1,105 +1,182 @@
-﻿import cv2
-import mediapipe as mp
-import numpy as np
+﻿"""Instance-local, length-framed face mesh server. Protocol helpers use stdlib only."""
+import argparse
 import json
-import win32pipe, win32file, pywintypes, struct
+import struct
+import time
 
-PIPE_NAME = r'\\.\pipe\FaceMeshPipe'
+MAX_REQUEST = 8 * 1024 * 1024
+MAX_RESPONSE = 64 * 1024
+IO_TIMEOUT = 3.0
 
-# MediaPipe 초기화
-mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5) # 최대 5명(값이 더 커질 경우 처리속도 감소. 혹시 필요하다면 서버를 늘릴 것)
 
-def find_noses(img):
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    result = face_mesh.process(img_rgb)
-    if not result.multi_face_landmarks:
-        return []
+def decode_request(payload):
+    if len(payload) < 5:
+        raise ValueError("short request")
+    size = struct.unpack_from("<I", payload)[0]
+    if size == 0 or size > len(payload) - 5:
+        raise ValueError("invalid metadata length")
+    metadata = json.loads(payload[4:4 + size].decode("utf-8"))
+    required = {"sessionId", "cameraId", "frameId", "width", "height", "mirrored", "rotationDegrees"}
+    if not isinstance(metadata, dict) or set(metadata) != required:
+        raise ValueError("invalid metadata")
+    if (not isinstance(metadata["sessionId"], str) or not metadata["sessionId"].strip()
+            or not isinstance(metadata["cameraId"], str) or not metadata["cameraId"].strip()
+            or type(metadata["frameId"]) is not int
+            or type(metadata["width"]) is not int or metadata["width"] <= 0
+            or type(metadata["height"]) is not int or metadata["height"] <= 0
+            or type(metadata["mirrored"]) is not bool
+            or type(metadata["rotationDegrees"]) is not int
+            or metadata["rotationDegrees"] not in (0, 90, 180, 270)):
+        raise ValueError("invalid metadata")
+    return metadata, payload[4 + size:]
 
-    h, w, _ = img.shape
-    noses = []
-    for face_landmarks in result.multi_face_landmarks:
-        nose = face_landmarks.landmark[1]  # 1번은 코끝
-        noses.append({
-            "x": int(nose.x * w),
-            "y": int(nose.y * h)
-        })
 
-    return noses
+def encode_response(metadata, status, landmarks):
+    body = json.dumps({"metadata": metadata, "status": status, "landmarks": landmarks},
+                      ensure_ascii=True, separators=(",", ":")).encode("utf-8")
+    if not 0 < len(body) <= MAX_RESPONSE:
+        raise ValueError("response too large")
+    return struct.pack("<I", len(body)) + body
 
-def read_exact(pipe, size, timeout_sec=5.0):
-    data = b''
-    while len(data) < size:
-        try:
-            chunk = win32file.ReadFile(pipe, size - len(data))[1]
-        except pywintypes.error as e:
-            print(f"[❌ Read 실패] {e}")
-            return None
-        if not chunk:
-            break
-        data += chunk
-    return data
 
-def handle_client(pipe):
-    print("✅ 클라이언트 연결됨!")
+def process_request(payload, detector):
+    """Detector receives encoded bytes and metadata; None/empty means no face."""
+    metadata, image = decode_request(payload)
     try:
-        while True:
-            len_buf = read_exact(pipe, 4)
-            if not len_buf or len(len_buf) < 4:
-                print("[⚠️ 경고] 길이 수신 실패 또는 파이프 종료됨")
-                break
+        landmarks = detector(image, metadata)
+        return encode_response(metadata, "ok" if landmarks else "no_face", landmarks or [])
+    except Exception:
+        # Never forward exception text, input data, or image contents to the client.
+        return encode_response(metadata, "error", [])
 
-            length = struct.unpack('<I', len_buf)[0]
-            img_buf = read_exact(pipe, length)
-            if img_buf is None or len(img_buf) != length:
-                print("[⚠️ 경고] 이미지 데이터 수신 실패")
-                break
 
-            nparr = np.frombuffer(img_buf, np.uint8)
-            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+def _overlapped(pipe, operation, value, timeout):
+    import pywintypes
+    import win32event
+    import win32file
 
-            if img is None:
-                print("[⚠️ 경고] 이미지 디코딩 실패")
-                print(f"[⚠️ 디코딩 실패] 수신된 이미지 길이: {len(img_buf)}")
-                print(f"[⚠️ 디코딩 실패] 시작 바이트: {img_buf[:10]}")
-                result_json = json.dumps({}).encode('utf-8')
-            else:
-                noses = find_noses(img)
-                result_json = json.dumps(noses).encode('utf-8')
-
-            result_len = struct.pack('<I', len(result_json))
-
-            try:
-                win32file.WriteFile(pipe, result_len + result_json)
-            except pywintypes.error as e:
-                print(f"[❌ Write 실패] {e}")
-                break
+    overlapped = pywintypes.OVERLAPPED()
+    event = win32event.CreateEvent(None, True, False, None)
+    overlapped.hEvent = event
+    try:
+        if operation == "read":
+            code, buffer = win32file.ReadFile(pipe, value, overlapped)
+        else:
+            code, buffer = win32file.WriteFile(pipe, value, overlapped)
+        if code not in (0, 997):
+            raise OSError("pipe I/O failed")
+        if code == 997:
+            milliseconds = win32event.INFINITE if timeout is None else max(0, int(timeout * 1000))
+            if win32event.WaitForSingleObject(event, milliseconds) != win32event.WAIT_OBJECT_0:
+                win32file.CancelIo(pipe)
+                # Complete the cancelled operation before its OVERLAPPED/event goes away.
+                try:
+                    win32file.GetOverlappedResult(pipe, overlapped, True)
+                except pywintypes.error:
+                    pass
+                raise TimeoutError("pipe I/O timed out")
+        count = win32file.GetOverlappedResult(pipe, overlapped, True)
+        return bytes(buffer[:count]) if operation == "read" else count
     finally:
-        try:
-            win32file.CloseHandle(pipe)
-        except:
-            pass
-        print("🛑 클라이언트 연결 종료됨.")
+        event.Close()
+
+
+def read_exact(pipe, size, idle=False):
+    result = bytearray()
+    deadline = None if idle else time.monotonic() + IO_TIMEOUT
+    while len(result) < size:
+        timeout = None if deadline is None else max(0, deadline - time.monotonic())
+        chunk = _overlapped(pipe, "read", size - len(result), timeout)
+        if not chunk:
+            raise EOFError("pipe closed")
+        result.extend(chunk)
+        if deadline is None:
+            deadline = time.monotonic() + IO_TIMEOUT
+    return bytes(result)
+
+
+def write_exact(pipe, data):
+    offset = 0
+    deadline = time.monotonic() + IO_TIMEOUT
+    while offset < len(data):
+        written = _overlapped(pipe, "write", data[offset:], max(0, deadline - time.monotonic()))
+        if written <= 0:
+            raise EOFError("pipe closed")
+        offset += written
+
+
+def handle_client(pipe, detector):
+    while True:
+        length = struct.unpack("<I", read_exact(pipe, 4, idle=True))[0]
+        if length <= 0 or length > MAX_REQUEST:
+            raise ValueError("invalid request length")
+        payload = read_exact(pipe, length)
+        write_exact(pipe, process_request(payload, detector))
+
+
+def make_detector():
+    import cv2
+    import mediapipe as mp
+    import numpy as np
+
+    mesh = mp.solutions.face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5)
+
+    def detect(image, metadata):
+        frame = cv2.imdecode(np.frombuffer(image, np.uint8), cv2.IMREAD_COLOR)
+        if frame is None or frame.shape[1] != metadata["width"] or frame.shape[0] != metadata["height"]:
+            raise ValueError("invalid image")
+        result = mesh.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        if not result.multi_face_landmarks:
+            return []
+        return [{"x": int(face.landmark[1].x * frame.shape[1]),
+                 "y": int(face.landmark[1].y * frame.shape[0])}
+                for face in result.multi_face_landmarks]
+    return mesh, detect
+
 
 def main():
-    print("📡 FaceMesh Pipe 서버 시작됨.")
-    while True:
-        try:
+    import pywintypes
+    import win32event
+    import win32file
+    import win32pipe
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--pipe-name", required=True)
+    args = parser.parse_args()
+    if not args.pipe_name or "\\" in args.pipe_name or "/" in args.pipe_name:
+        parser.error("invalid pipe name")
+    mesh, detector = make_detector()
+    try:
+        while True:
             pipe = win32pipe.CreateNamedPipe(
-                PIPE_NAME,
-                win32pipe.PIPE_ACCESS_DUPLEX,
+                "\\\\.\\pipe\\" + args.pipe_name,
+                win32pipe.PIPE_ACCESS_DUPLEX | win32file.FILE_FLAG_OVERLAPPED,
                 win32pipe.PIPE_TYPE_BYTE | win32pipe.PIPE_WAIT,
-                1, 65536, 65536,
-                0, None
-            )
-            win32pipe.ConnectNamedPipe(pipe, None)
-            handle_client(pipe)
-        except Exception as e:
-            print(f"[❌ 예외] {e}")
+                1, 65536, 65536, 0, None)
             try:
-                win32file.CloseHandle(pipe)
-            except:
-                pass
+                event = win32event.CreateEvent(None, True, False, None)
+                try:
+                    overlapped = pywintypes.OVERLAPPED()
+                    overlapped.hEvent = event
+                    try:
+                        code = win32pipe.ConnectNamedPipe(pipe, overlapped)
+                        if code == 997:
+                            win32event.WaitForSingleObject(event, win32event.INFINITE)
+                            win32file.GetOverlappedResult(pipe, overlapped, True)
+                    except pywintypes.error as error:
+                        if error.winerror != 535:  # Client connected before ConnectNamedPipe.
+                            raise
+                finally:
+                    event.Close()
+                try:
+                    handle_client(pipe, detector)
+                except (EOFError, OSError, ValueError, UnicodeError, json.JSONDecodeError, pywintypes.error):
+                    pass
+            finally:
+                pipe.Close()
+    finally:
+        mesh.close()
+
 
 if __name__ == "__main__":
     main()

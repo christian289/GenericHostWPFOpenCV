@@ -1,86 +1,271 @@
-﻿<UserControl x:Class="OhMyRudolph.Wpf.UserControls.VideoView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:c="clr-namespace:OhMyRudolph.Wpf.Controls;assembly=OhMyRudolph.Wpf.Controls"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:local="clr-namespace:OhMyRudolph.Wpf.UserControls"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+﻿<UserControl x:Class="OhMyRudolph.Wpf.UserControls.VideoView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:c="clr-namespace:OhMyRudolph.Wpf.Controls;assembly=OhMyRudolph.Wpf.Controls" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:OhMyRudolph.Wpf.UserControls" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              d:DataContext="{d:DesignInstance local:VideoViewModel}"
-             d:DesignHeight="720"
-             d:DesignWidth="1280"
-             mc:Ignorable="d">
+             d:DesignHeight="680" d:DesignWidth="1264" Loaded="OnLoaded" Unloaded="OnUnloaded" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/OhMyRudolph.Wpf.Core;component/ControlTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolVisibility" />
+            <Style x:Key="ActionButton" TargetType="c:PhotoGrayMainPageButton">
+                <Setter Property="Height" Value="48" />
+                <Setter Property="Margin" Value="0,5" />
+                <Setter Property="FontSize" Value="16" />
+                <Style.Triggers>
+                    <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Setter Property="BorderBrush" Value="#FF7979" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.45" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FrameButton" TargetType="Button">
+                <Setter Property="Background" Value="#202020" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderBrush" Value="#606060" />
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="Padding" Value="14" />
+                <Setter Property="Margin" Value="12,0" />
+                <Setter Property="AutomationProperties.ItemStatus" Value="선택 안 됨" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Card"
+                                    Padding="{TemplateBinding Padding}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="12">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Card" Property="BorderBrush" Value="White" />
+                                    <Setter TargetName="Card" Property="BorderThickness" Value="4" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Card" Property="Background" Value="#353535" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Card" Property="Opacity" Value="0.55" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="24,16" Background="#131313" TextElement.FontFamily="Malgun Gothic" TextElement.Foreground="White">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="70" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="86" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="1">
-            <local:DetectingNoseView Width="{StaticResource Width_DetectingNoseView}"
-                                     Height="{StaticResource Height_DetectingNoseView}"
-                                     DataContext="{Binding DetectingNoseViewModel}" />
-            <UniformGrid x:Name="ButtonSet"
-                         Width="{StaticResource Width_ButtonSet}"
-                         Height="{StaticResource Height_ButtonSet}"
-                         Margin="{StaticResource Margin_ButtonSet}"
-                         HorizontalAlignment="{StaticResource HorizontalAlignment_ButtonSet}"
-                         VerticalAlignment="{StaticResource VerticalAlignment_ButtonSet}"
-                         Columns="3">
-                <c:PhotoGrayEffectSelectionButton Background="{StaticResource Background_ButtonItem}"
-                                                  BorderBrush="{StaticResource BorderBursh_ButtonItem}"
-                                                  BorderThickness="{StaticResource BorderThickness_ButtonItem}"
-                                                  Command="{Binding NoEffectCommand}">
-                    <iconPacks:PackIconTypicons Kind="Cancel" />
-                </c:PhotoGrayEffectSelectionButton>
-                <c:PhotoGrayEffectSelectionButton Background="{StaticResource Background_ButtonItem}"
-                                                  BorderBrush="{StaticResource BorderBursh_ButtonItem}"
-                                                  BorderThickness="{StaticResource BorderThickness_ButtonItem}"
-                                                  Command="{Binding DrawingRudolphEffectCommand}">
-                    <Ellipse Width="{StaticResource WidthHeight_ButtonItemContent}"
-                             Height="{StaticResource WidthHeight_ButtonItemContent}"
-                             Fill="{StaticResource RudolphNoseColor}" />
-                </c:PhotoGrayEffectSelectionButton>
-                <c:PhotoGrayEffectSelectionButton Background="{StaticResource Background_ButtonItem}"
-                                                  BorderBrush="{StaticResource BorderBursh_ButtonItem}"
-                                                  BorderThickness="{StaticResource BorderThickness_ButtonItem}"
-                                                  Command="{Binding OverlayDeadpoolEffectCommand}">
-                    <!--  OhMyRudolph.Core 어셈블리에 있는 deadpool.png는 Pack Uri 절대 경로로 접근해도 효과가 없었다.  -->
-                    <Image Source="/OhMyRudolph.Wpf.UserControls;component/deadpool.png" />
-                </c:PhotoGrayEffectSelectionButton>
-            </UniformGrid>
-            <Rectangle x:Name="FlashEffect"
-                       Width="{StaticResource Width_DetectingNoseView}"
-                       Height="{StaticResource Height_DetectingNoseView}"
-                       Fill="White"
-                       IsHitTestVisible="False"
-                       Opacity="0"
-                       RenderTransformOrigin="0.5,0.5">
-                <Rectangle.RenderTransform>
-                    <ScaleTransform x:Name="FlashScale" ScaleX="1" ScaleY="1" />
-                </Rectangle.RenderTransform>
-            </Rectangle>
+        <Grid>
+            <StackPanel>
+                <TextBlock FontSize="24" FontWeight="Bold" Text="OH MY RUDOLPH · FOUR MOMENTS" />
+                <TextBlock Margin="0,8,0,0" FontSize="14" Foreground="#D0D0D0"
+                           Text="{Binding StepLabel}" />
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right">
+                <TextBlock HorizontalAlignment="Right" FontSize="24" FontWeight="SemiBold" Foreground="#FF7979"
+                           Text="{Binding ShotProgress}" />
+                <TextBlock HorizontalAlignment="Right" FontSize="14"
+                           Text="{Binding FrameLabel}" />
+            </StackPanel>
         </Grid>
-        <Grid Grid.Row="0"
-              Grid.RowSpan="2"
-              HorizontalAlignment="{StaticResource HorizontalAlignment_PhotoShotButton}">
-            <c:PhotoGrayVideoViewPhotoShotButton Background="Wheat"
-                                                 Click="PhotoGrayVideoViewPhotoShotButton_Click"
-                                                 Command="{Binding PhotoShotCommand}">
-                <StackPanel>
-                    <TextBlock Margin="3,0,3,0"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Text="찰칵~!" />
-                    <iconPacks:PackIconMaterialDesign HorizontalAlignment="Center" Kind="Camera" />
+
+        <!--  Entry and frame choice are deliberately camera-free.  -->
+        <Grid Grid.Row="1"
+              Visibility="{Binding IsFrameSelection, Converter={StaticResource BoolVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Margin="0,0,0,12" HorizontalAlignment="Center" FontSize="20" Text="나만의 4컷 프레임을 골라 주세요" />
+            <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+                <Button AutomationProperties.AutomationId="Booth.Frame.Light" AutomationProperties.Name="라이트 페이퍼 프레임 선택"
+                        Command="{Binding SelectLightFrameCommand}">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource FrameButton}"
+                               TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLightFrame}"
+                                             Value="True">
+                                    <Setter Property="BorderBrush" Value="#FF7979" />
+                                    <Setter Property="AutomationProperties.ItemStatus" Value="선택됨" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel>
+                        <Image Width="184" Height="260"
+                               Source="{Binding LightFramePreview}" />
+                        <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" FontSize="18" Text="LIGHT PAPER" />
+                    </StackPanel>
+                </Button>
+                <Button AutomationProperties.AutomationId="Booth.Frame.Dark" AutomationProperties.Name="다크 페이퍼 프레임 선택"
+                        Command="{Binding SelectDarkFrameCommand}">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource FrameButton}"
+                               TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDarkFrame}"
+                                             Value="True">
+                                    <Setter Property="BorderBrush" Value="#FF7979" />
+                                    <Setter Property="AutomationProperties.ItemStatus" Value="선택됨" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel>
+                        <Image Width="184" Height="260"
+                               Source="{Binding DarkFramePreview}" />
+                        <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" FontSize="18" Text="DARK PAPER" />
+                    </StackPanel>
+                </Button>
+                <StackPanel Width="240" Margin="28,0,0,0" VerticalAlignment="Center">
+                    <TextBlock FontSize="20" FontWeight="SemiBold" Text="직접 만든 페이퍼 프레임" />
+                    <TextBlock Margin="0,14,0,20" Foreground="#D0D0D0" Text="4장의 사진을 한 장으로. 라이트·다크 모두 같은 2×2 레이아웃입니다." TextWrapping="Wrap" />
+                    <c:PhotoGrayMainPageButton AutomationProperties.AutomationId="Booth.StartPreview"
+                                               Command="{Binding StartPreviewCommand}"
+                                               Content="카메라 미리보기 시작"
+                                               Style="{StaticResource ActionButton}" />
                 </StackPanel>
-            </c:PhotoGrayVideoViewPhotoShotButton>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Visibility="{Binding IsLive, Converter={StaticResource BoolVisibility}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+            <Border Margin="0,0,24,0" Background="#202020" ClipToBounds="True" CornerRadius="12">
+                <Viewbox Stretch="Uniform">
+                    <Grid Width="360" Height="450" ClipToBounds="True">
+                        <Image Source="{Binding DetectingNoseViewModel.PreviewImage}"
+                               Stretch="UniformToFill" />
+                        <Border Padding="10" VerticalAlignment="Bottom" Background="#33000000">
+                            <TextBlock FontSize="11" Text="사진은 화면과 같은 4:5 중앙 영역으로 저장됩니다" TextAlignment="Center" />
+                        </Border>
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="120" FontWeight="Bold" Foreground="White"
+                                   Text="{Binding Countdown}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Countdown}"
+                                                     Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Viewbox>
+            </Border>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock FontSize="22" FontWeight="SemiBold" Text="오늘의 표정을 담아요" />
+                <TextBlock Margin="0,10,0,14" Foreground="#D0D0D0" Text="각 사진마다 3초 카운트다운" />
+                <c:PhotoGrayMainPageButton AutomationProperties.AutomationId="Booth.Filter.None"
+                                           Command="{Binding NoEffectCommand}"
+                                           Content="효과 없음"
+                                           Style="{StaticResource ActionButton}" />
+                <c:PhotoGrayMainPageButton AutomationProperties.AutomationId="Booth.Filter.Nose"
+                                           Command="{Binding DrawingRudolphEffectCommand}"
+                                           Content="빨간 루돌프 코"
+                                           Style="{StaticResource ActionButton}" />
+                <TextBlock Margin="0,8" Foreground="#D0D0D0"
+                           Text="{Binding DetectingNoseViewModel.StatusMessage}"
+                           TextWrapping="Wrap" />
+                <TextBlock Foreground="#FF7979" Text="빨간 코 선택됨"
+                           Visibility="{Binding ApplyingDrawingRudolphEffect, Converter={StaticResource BoolVisibility}}" />
+                <c:PhotoGrayMainPageButton AutomationProperties.AutomationId="Booth.Capture"
+                                           Command="{Binding CaptureCommand}"
+                                           Content="{Binding CaptureLabel}"
+                                           Style="{StaticResource ActionButton}" />
+                <c:PhotoGrayMainPageButton AutomationProperties.AutomationId="Booth.CancelCapture"
+                                           Command="{Binding CancelCaptureCommand}"
+                                           Content="카운트다운 취소"
+                                           Style="{StaticResource ActionButton}" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Visibility="{Binding HasComposite, Converter={StaticResource BoolVisibility}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="420" />
+            </Grid.ColumnDefinitions>
+            <Border Margin="0,0,24,0" Padding="12" Background="#202020" CornerRadius="12">
+                <Image AutomationProperties.Name="4컷 합성 사진 미리보기"
+                       Source="{Binding CompositePreview}"
+                       Stretch="Uniform" />
+            </Border>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock FontSize="22" FontWeight="SemiBold" Text="네 순간, 하나의 이야기" />
+                <TextBlock Margin="0,8,0,12" Foreground="#D0D0D0" Text="다시 찍을 사진을 선택하세요. 마지막 컷도 가능합니다." TextWrapping="Wrap" />
+                <ListBox Height="145" AutomationProperties.AutomationId="Booth.Shots" Background="Transparent" BorderThickness="0"
+                         ItemsSource="{Binding Shots}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                         SelectedItem="{Binding SelectedShot}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="4" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="3" />
+                            <Setter Property="Margin" Value="2" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="AutomationProperties.AutomationId" Value="{Binding AutomationId}" />
+                            <Setter Property="AutomationProperties.Name" Value="{Binding Label}" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Image Height="104"
+                                       Source="{Binding Image}"
+                                       Stretch="UniformToFill" />
+                                <TextBlock Margin="0,6,0,0" HorizontalAlignment="Center" FontSize="11" Foreground="White"
+                                           Text="{Binding Label}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <c:PhotoGrayMainPageButton AutomationProperties.AutomationId="Booth.Retake"
+                                           Command="{Binding RetakeCommand}"
+                                           Content="선택한 사진 다시 찍기"
+                                           Style="{StaticResource ActionButton}" />
+                <c:PhotoGrayMainPageButton AutomationProperties.AutomationId="Booth.Save"
+                                           Command="{Binding SaveCommand}"
+                                           Content="합성 사진 PNG / JPEG 저장"
+                                           Style="{StaticResource ActionButton}" />
+                <TextBlock Margin="0,10" Foreground="#FF7979" Text="저장 완료 · 새 세션을 시작할 수 있어요"
+                           Visibility="{Binding IsSaved, Converter={StaticResource BoolVisibility}}" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <c:PhotoGrayBackButton Height="48" VerticalAlignment="Bottom" AutomationProperties.AutomationId="Booth.Back" AutomationProperties.Name="사진을 보관하고 모드 선택으로 돌아가기"
+                                   Command="{Binding BackCommand}" />
+            <TextBlock Grid.Column="1" Margin="20,0" VerticalAlignment="Center" AutomationProperties.AutomationId="Booth.Status" AutomationProperties.LiveSetting="Polite" Foreground="#E0E0E0"
+                       Text="{Binding StatusMessage}"
+                       TextWrapping="Wrap" />
+            <c:PhotoGrayMainPageButton Grid.Column="2" AutomationProperties.AutomationId="Booth.NewSession"
+                                       Command="{Binding NewSessionCommand}"
+                                       Content="새 세션 · 사진 초기화"
+                                       Style="{StaticResource ActionButton}" />
         </Grid>
     </Grid>
 </UserControl>

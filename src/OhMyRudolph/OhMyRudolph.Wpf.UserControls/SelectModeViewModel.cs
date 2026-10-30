@@ -2,73 +2,41 @@
 
 public partial class SelectModeViewModel : ObservableRecipient
 {
-    private readonly ILogger<SelectModeViewModel> logger;
-
-    public SelectModeViewModel(
-        ILogger<SelectModeViewModel> logger,
-        VideoViewModel videoViewModel)
+    public SelectModeViewModel(ILogger<SelectModeViewModel> logger, VideoViewModel videoViewModel)
     {
-        this.logger = logger;
         VideoViewModel = videoViewModel;
         IsActive = true;
     }
 
-    public VideoViewModel VideoViewModel { get; init; }
+    public VideoViewModel VideoViewModel { get; }
 
-    private static async Task KillPythonProcessesViaWmiAsync()
-    {
-        await Task.Run(() =>
-        {
-            using var searcher = new ManagementObjectSearcher(
-                "SELECT ProcessId, Name FROM Win32_Process WHERE Name LIKE '%python%'");
+    [NotifyCanExecuteChangedFor(nameof(NavigatePhotoViewCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NavigateVideoViewCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NavigateMainPageCommand))]
+    [ObservableProperty] private bool _isNavigating;
 
-            using var results = searcher.Get();
+    private bool CanNavigate() => !IsNavigating;
 
-            foreach (ManagementObject process in results.Cast<ManagementObject>())
-            {
-                try
-                {
-                    var processId = Convert.ToInt32(process["ProcessId"]);
-                    var processName = process["Name"].ToString();
-
-                    using var targetProcess = Process.GetProcessById(processId);
-                    targetProcess.Kill();
-
-                    Console.WriteLine($"WMI를 통해 종료됨: {processName} (PID: {processId})");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"WMI 프로세스 종료 실패: {ex.Message}");
-                }
-                finally
-                {
-                    process?.Dispose();
-                }
-            }
-        });
-    }
-
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanNavigate))]
     public async Task NavigatePhotoView()
     {
-        await KillPythonProcessesViaWmiAsync();
-        Messenger.Send(new ValueChangedMessage<string>(nameof(PhotoViewModel)));
+        IsNavigating = true;
+        try
+        {
+            // Stop only this app's camera work; never enumerate/kill unrelated Python processes.
+            await VideoViewModel.DeactivateAsync();
+            Messenger.Send(new ValueChangedMessage<string>(nameof(PhotoViewModel)));
+        }
+        finally { IsNavigating = false; }
     }
 
-    [RelayCommand]
-    public async Task NavigateVideoView()
+    [RelayCommand(CanExecute = nameof(CanNavigate))]
+    public void NavigateVideoView()
     {
-        await KillPythonProcessesViaWmiAsync();
-        Messenger.Send(new ValueChangedMessage<string>(nameof(ReadyScreenViewModel)));
-        await Task.Delay(TimeSpan.FromSeconds(3));
+        // The booth's frame-selection screen is camera-free. Its explicit preview action starts capture.
         Messenger.Send(new ValueChangedMessage<string>(nameof(VideoViewModel)));
-        await Task.Delay(TimeSpan.FromSeconds(1));
-        await VideoViewModel.CameraStartAsync();
     }
 
-    [RelayCommand]
-    public void NavigateMainPage()
-    {
-        Messenger.Send(new ValueChangedMessage<string>(nameof(MainPageViewModel)));
-    }
+    [RelayCommand(CanExecute = nameof(CanNavigate))]
+    public void NavigateMainPage() => Messenger.Send(new ValueChangedMessage<string>(nameof(MainPageViewModel)));
 }

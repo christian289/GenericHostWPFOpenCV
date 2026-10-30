@@ -1,0 +1,15 @@
+{
+  "name": "ohmyrudolph-dev-harness",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "test": "node --test scripts/tool-policy.test.mjs",
+    "doctor": "node scripts/dev.mjs doctor",
+    "build": "node scripts/dev.mjs build",
+    "verify": "node --test scripts/tool-policy.test.mjs && node scripts/dev.mjs verify",
+    "test:dotnet": "node scripts/dev.mjs test",
+    "smoke:pipe": "node scripts/dev.mjs pipe-smoke",
+    "smoke:ui": "node scripts/dev.mjs ui-smoke"
+  }
+}

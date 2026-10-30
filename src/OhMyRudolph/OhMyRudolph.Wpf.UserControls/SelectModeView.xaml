@@ -36,6 +36,7 @@
                                                 Margin="0,0,4,0"
                                                 HorizontalAlignment="Right"
                                                 Background="#FFFFFFFF"
+                                                AutomationProperties.AutomationId="Mode.Photo"
                                                 Command="{Binding NavigatePhotoViewCommand}"
                                                 InternalMargin="10"
                                                 ItemString="파일 업로드"
@@ -46,6 +47,7 @@
                                                 Margin="4,0,0,0"
                                                 HorizontalAlignment="Left"
                                                 Background="#FF131313"
+                                                AutomationProperties.AutomationId="Mode.Booth"
                                                 Command="{Binding NavigateVideoViewCommand}"
                                                 InternalMargin="10,10,10,10"
                                                 ItemString="라이브 스냅샷 촬영"
@@ -58,6 +60,7 @@
                     Orientation="Horizontal">
             <c:PhotoGrayBackButton Width="150"
                                    Height="40"
+                                   AutomationProperties.AutomationId="Mode.Back"
                                    Command="{Binding NavigateMainPageCommand}" />
         </StackPanel>
     </Grid>

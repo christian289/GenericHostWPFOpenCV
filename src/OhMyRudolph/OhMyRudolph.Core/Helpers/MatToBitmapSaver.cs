@@ -46,7 +46,7 @@ public static class MatToBitmapSaver
             FileInfo fileInfo = new FileInfo(outputPath);
             if (fileInfo.Exists && fileInfo.Length > 0)
             {
-                Console.WriteLine($"Bitmap 저장 성공: {outputPath} (크기: {fileInfo.Length} bytes)");
+                Console.WriteLine("Bitmap 저장 성공");
                 return true;
             }
 
@@ -54,7 +54,7 @@ public static class MatToBitmapSaver
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Bitmap 저장 중 오류: {ex.Message}");
+            Console.WriteLine($"Bitmap 저장 오류 유형: {ex.GetType().Name}");
             return false;
         }
     }

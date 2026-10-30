@@ -1,0 +1,16 @@
+{
+  "AttributesTolerance": 1,
+  "KeepFirstAttributeOnSameLine": true,
+  "MaxAttributeCharactersPerLine": 0,
+  "MaxAttributesPerLine": 0,
+  "RemoveDesignTimeReferences": false,
+  "EnableAttributeReordering": true,
+  "ReorderGridChildren": false,
+  "ReorderCanvasChildren": false,
+  "ReorderSetters": 0,
+  "RemoveEndingTagOfEmptyElement": true,
+  "SpaceBeforeClosingSlash": true,
+  "FormatMarkupExtension": true,
+  "NoNewLineMarkupExtensions": "x:Bind, Binding",
+  "FormatOnSave": false
+}

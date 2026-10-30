@@ -46,7 +46,7 @@ public partial class PhotoViewModel : ObservableRecipient
 
                 if (_originalMat == null || _originalMat.Empty())
                 {
-                    logger.ZLogError($"이미지 로드 실패: {openFileDialog.FileName}");
+                    logger.ZLogError($"이미지 로드 실패");
                     return;
                 }
 
@@ -55,12 +55,12 @@ public partial class PhotoViewModel : ObservableRecipient
                 ProcessedImage?.Dispose();
                 ProcessedImage = null; // 새 이미지 로드 시 처리된 이미지 초기화
 
-                logger.ZLogInformation($"이미지 로드 완료: {openFileDialog.FileName}");
+                logger.ZLogInformation($"이미지 로드 완료");
             }
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"이미지 로드 중 오류 발생: {ex.Message}");
+            logger.ZLogError($"이미지 로드 오류 유형: {ex.GetType().Name}");
         }
     }
 
@@ -84,7 +84,7 @@ public partial class PhotoViewModel : ObservableRecipient
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"이미지 처리 중 오류 발생: {ex.Message}");
+            logger.ZLogError($"이미지 처리 오류 유형: {ex.GetType().Name}");
         }
     }
 
@@ -132,12 +132,12 @@ public partial class PhotoViewModel : ObservableRecipient
                 }
             }
 
-            logger.ZLogInformation($"효과 적용 완료. 검출된 얼굴 수: {response?.Count}");
+            logger.ZLogInformation($"효과 적용 완료");
             ProcessedImage = processedMat;
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"효과 적용 중 오류 발생: {ex.Message}");
+            logger.ZLogError($"이미지 효과 처리 오류 유형: {ex.GetType().Name}");
             client.StopPythonServer();
         }
     }
@@ -175,12 +175,12 @@ public partial class PhotoViewModel : ObservableRecipient
                 };
                 MatToBitmapSaver.SaveMatAsBitmap(ProcessedImage, saveFileDialog.FileName!, imageFormat);
 
-                logger.ZLogInformation($"이미지 저장 완료: {saveFileDialog.FileName}");
+                logger.ZLogInformation($"이미지 저장 완료");
             }
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"이미지 저장 중 오류 발생: {ex.Message}");
+            logger.ZLogError($"이미지 저장 오류 유형: {ex.GetType().Name}");
         }
     }
 

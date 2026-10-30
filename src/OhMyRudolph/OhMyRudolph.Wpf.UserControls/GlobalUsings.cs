@@ -8,8 +8,6 @@ global using OpenCvSharp;
 global using System.Diagnostics;
 global using System.Drawing.Imaging;
 global using System.IO;
-global using System.Management;
-global using System.Reactive.Linq;
 global using System.Windows;
 global using System.Windows.Controls;
 global using System.Windows.Media.Animation;

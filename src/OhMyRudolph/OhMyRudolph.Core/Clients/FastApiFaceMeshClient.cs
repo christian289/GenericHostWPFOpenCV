@@ -2,7 +2,7 @@
 
 namespace OhMyRudolph.Core.Clients;
 
-public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger, HttpClient httpClient)
+public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger, HttpClient httpClient) : IDisposable
 {
     private Process? _pythonProcess;
     private readonly string serverUrl = "http://127.0.0.1:9320";
@@ -26,7 +26,7 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "python",
+                    FileName = PythonRuntime.ResolveExecutable(),
                     Arguments = $"\"{serverPath}\"",
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -44,12 +44,12 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
             _pythonProcess.OutputDataReceived += (sender, e) =>
             {
                 if (!string.IsNullOrWhiteSpace(e.Data))
-                    logger.ZLogInformation($"[FastAPI STDOUT] {e.Data}");
+                    logger.ZLogDebug($"FastAPI 서버 표준 출력 수신");
             };
             _pythonProcess.ErrorDataReceived += (sender, e) =>
             {
                 if (!string.IsNullOrWhiteSpace(e.Data))
-                    logger.ZLogWarning($"[FastAPI STDERR] {e.Data}");
+                    logger.ZLogWarning($"FastAPI 서버 진단 출력 수신");
             };
 
             _pythonProcess.BeginOutputReadLine();
@@ -59,7 +59,7 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"FastAPI 서버 시작 실패");
+            logger.ZLogError($"FastAPI 서버 시작 오류 유형: {ex.GetType().Name}");
             throw;
         }
     }
@@ -76,7 +76,7 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
         {
             try
             {
-                var response = await httpClient.GetAsync($"{serverUrl}/");
+                using var response = await httpClient.GetAsync($"{serverUrl}/");
                 if (response.IsSuccessStatusCode)
                 {
                     IsRunning = true;
@@ -84,7 +84,7 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
                     return;
                 }
             }
-            catch (Exception ex)
+            catch (HttpRequestException)
             {
                 // 서버가 아직 준비되지 않음
             }
@@ -119,17 +119,15 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
             content.Add(byteContent, "file", "frame.jpg");
 
             // API 호출
-            var response = await httpClient.PostAsync($"{serverUrl}/detect-noses", content);
+            using var response = await httpClient.PostAsync($"{serverUrl}/detect-noses", content);
 
             if (!response.IsSuccessStatusCode)
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                logger.ZLogError($"API 호출 실패: {response.StatusCode}, {errorContent}");
+                logger.ZLogError($"API 호출 실패: {response.StatusCode}");
                 return null;
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            logger.ZLogDebug($"API 응답: {jsonResponse}");
 
             var apiResponse = JsonSerializer.Deserialize<FaceMeshApiResponse>(jsonResponse);
 
@@ -144,12 +142,11 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
                 .ToList()
                 .AsReadOnly();
 
-            logger.ZLogDebug($"검출된 코 개수: {nosePositions.Count}");
             return nosePositions;
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"코 검출 API 호출 중 오류");
+            logger.ZLogError($"코 검출 API 호출 오류 유형: {ex.GetType().Name}");
             return null;
         }
     }
@@ -170,10 +167,12 @@ public sealed class FastApiFaceMeshClient(ILogger<FastApiFaceMeshClient> logger,
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"FastAPI 서버 종료 중 오류");
+            logger.ZLogError($"FastAPI 서버 종료 오류 유형: {ex.GetType().Name}");
         }
         finally
         {
+            _pythonProcess?.Dispose();
+            _pythonProcess = null;
             IsRunning = false;
         }
     }
