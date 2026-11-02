@@ -1,0 +1,4 @@
+{
+  global: om_abi_version; om_create; om_destroy; om_detect_jpeg;
+  local: *;
+};

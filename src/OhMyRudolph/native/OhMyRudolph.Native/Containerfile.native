@@ -1,0 +1,34 @@
+# Build from src/OhMyRudolph as context; see BUILDING.txt.
+# Ubuntu tag and apt packages are not digest/snapshot pinned; retain build metadata.
+FROM ubuntu:24.04 AS build
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl git build-essential python3 python3-dev unzip zip pkg-config \
+    libjpeg-dev libopencv-dev libavcodec-dev libavformat-dev libavutil-dev \
+    && rm -rf /var/lib/apt/lists/*
+ARG BAZEL_URL=https://github.com/bazelbuild/bazel/releases/download/6.5.0/bazel-6.5.0-linux-x86_64
+RUN curl -fL "$BAZEL_URL" -o /usr/local/bin/bazel \
+    && echo 'a40ac69263440761199fcb8da47ad4e3f328cbe79ffbf4ecc14e5ba252857307  /usr/local/bin/bazel' | sha256sum -c - \
+    && chmod +x /usr/local/bin/bazel
+RUN git clone https://github.com/google-ai-edge/mediapipe.git /src/mediapipe \
+    && git -C /src/mediapipe checkout --detach cad7f3ab99ebf175947e40c5252c642612aae927
+WORKDIR /src/mediapipe
+# MediaPipe's checked-in OpenCV rule leaves OpenCV 4 headers commented out.
+COPY native/OhMyRudolph.Native/opencv_linux.BUILD third_party/opencv_linux.BUILD
+# Official MediaPipe guide's CPU Hello World; not evidence of FaceMesh.
+RUN --mount=type=cache,id=ohmyrudolph-bazel-01021-noble-gcc13,target=/root/.cache/bazel \
+    bazel --batch --host_jvm_args=-Xmx1024m run -c opt --jobs=2 --local_ram_resources=8192 \
+    --define MEDIAPIPE_DISABLE_GPU=1 //mediapipe/examples/desktop/hello_world:hello_world
+COPY native/OhMyRudolph.Native/ /src/mediapipe/ohmyrudolph_native/
+RUN python3 ohmyrudolph_native/fetch_models.py /out
+RUN --mount=type=cache,id=ohmyrudolph-bazel-01021-noble-gcc13,target=/root/.cache/bazel \
+    bazel --batch --host_jvm_args=-Xmx1024m build -c opt --jobs=2 --local_ram_resources=8192 \
+    --define MEDIAPIPE_DISABLE_GPU=1 //ohmyrudolph_native:libohmyrudolph_native.so \
+    //ohmyrudolph_native:native_smoke \
+    && cp bazel-bin/ohmyrudolph_native/libohmyrudolph_native.so /out/ \
+    && cp bazel-bin/ohmyrudolph_native/native_smoke /out/ \
+    && ldd /out/libohmyrudolph_native.so > /out/native-ldd.txt \
+    && LD_LIBRARY_PATH=/out /out/native_smoke /out
+
+FROM scratch AS native
+COPY --from=build /out/ /app/
