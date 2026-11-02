@@ -1,7 +1,0 @@
-mediapipe==0.10.21
-opencv-contrib-python==4.11.0.86
-numpy==1.26.4
-pywin32==311
-fastapi==0.116.1
-python-multipart==0.0.20
-uvicorn==0.35.0

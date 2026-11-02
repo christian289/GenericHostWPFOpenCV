@@ -16,7 +16,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="OpenCvSharp4.Windows" />
     <PackageReference Include="ZLogger" />
-    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="OpenCvSharp4.Extensions" />
     <PackageReference Include="System.Drawing.Common" />
   </ItemGroup>

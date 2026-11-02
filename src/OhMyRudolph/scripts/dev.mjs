@@ -1,19 +1,22 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { dirname, resolve, relative, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verifyBundle } from './container-policy.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const solution = 'OhMyRudolph.slnx';
-const python = resolve(root, '.venv', 'Scripts', 'python.exe');
+const portablePodman = resolve(root, 'artifacts/podman-6.0.2/usr/bin/podman.exe');
+const bundledPodman = resolve(root, 'runtime/podman/podman.exe');
+const podman = process.env.OHMYRUDOLPH_PODMAN ?? (existsSync(bundledPodman) ? bundledPodman : existsSync(portablePodman) ? portablePodman : 'podman');
+const connection = process.env.OHMYRUDOLPH_PODMAN_CONNECTION ?? 'podman-machine-default';
+const manifest = process.env.OHMYRUDOLPH_IMAGE_MANIFEST ?? resolve(root, 'artifacts/container-bundle/processing-image.json');
 const [command = 'help', ...files] = process.argv.slice(2);
 function run(executable, args) {
-    const result = spawnSync(executable, args, {
-        cwd: root,
-        stdio: 'inherit',
-        shell: false,
-        env: { ...process.env, OHMYRUDOLPH_PYTHON: process.env.OHMYRUDOLPH_PYTHON ?? python }
-    });
+    const env = { ...process.env, OHMYRUDOLPH_IMAGE_MANIFEST: manifest, OHMYRUDOLPH_PODMAN_CONNECTION: connection };
+    if (isAbsolute(podman)) env.OHMYRUDOLPH_PODMAN = podman;
+    const result = spawnSync(executable, args, { cwd: root, stdio: 'inherit', shell: false, env });
     if (result.error) throw result.error;
     if (result.status !== 0) process.exit(result.status ?? 1);
 }
@@ -26,50 +29,51 @@ function scopedFile(file) {
     return rel;
 }
 function format(check) {
-    if (!files.length) throw new Error('전체 재포맷 방지를 위해 파일을 명시하세요: format-check OhMyRudolph.Wpf/MainWindow.xaml');
+    if (!files.length) throw new Error('전체 재포맷 방지를 위해 파일을 명시하세요.');
     run('dotnet', ['tool', 'restore']);
     const cs = [];
     for (const file of files.map(scopedFile)) {
-        if (file.endsWith('.xaml')) {
-            run('dotnet', ['tool', 'run', 'xstyler', '--', '-f', file, '-c', 'Settings.XamlStyler', ...(check ? ['--passive'] : [])]);
-        } else if (file.endsWith('.cs')) cs.push(file);
+        if (file.endsWith('.xaml')) run('dotnet', ['tool', 'run', 'xstyler', '--', '-f', file, '-c', 'Settings.XamlStyler', ...(check ? ['--passive'] : [])]);
+        else if (file.endsWith('.cs')) cs.push(file);
         else throw new Error('포맷 대상은 .cs 또는 .xaml이어야 합니다.');
     }
     if (cs.length) run('dotnet', ['format', solution, '--no-restore', ...(check ? ['--verify-no-changes'] : []), '--include', ...cs]);
 }
 try {
     switch (command) {
-        case 'doctor':
+        case 'doctor': {
             run('dotnet', ['--version']);
             console.log(`Node ${process.version}`);
-            if (!existsSync(python)) throw new Error('앱 .venv가 없습니다. py -3.11 -m venv .venv 후 requirements.txt를 설치하세요.');
-            run(python, ['-c', 'import sys, cv2, mediapipe, numpy, win32pipe, fastapi; print("Python", sys.version.split()[0]); print("MediaPipe", mediapipe.__version__); print("OpenCV", cv2.__version__)']);
+            run(podman, ['--version']);
+            run(podman, ['--connection', connection, 'info', '--format', '{{.Host.Arch}}']);
+            const header = JSON.parse(await readFile(manifest, 'utf8'));
+            await verifyBundle(manifest, header.packageVersion);
+            console.log('처리 이미지 manifest·아카이브 해시 검증 통과. 앱 실행 버전과의 대조는 실제 시작 시 수행합니다.');
             break;
+        }
         case 'restore': run('dotnet', ['tool', 'restore']); run('dotnet', ['restore', solution]); break;
         case 'build': build(); break;
         case 'test': build(); test(); break;
         case 'verify': run('dotnet', ['tool', 'restore']); build(); test(); break;
         case 'format': format(false); break;
         case 'format-check': format(true); break;
-        case 'pipe-smoke':
-            run('dotnet', ['run', '--project', 'tools/OhMyRudolph.PipeSmoke', '-c', 'Release']);
+        case 'container-smoke':
+            if (!existsSync(resolve(root, 'artifacts/astronaut.jpg'))) throw new Error('먼저 문서의 공개 시험 자료 준비 절차를 수행하세요. 사용자 사진으로 대체하지 않습니다.');
+            run('dotnet', ['run', '--project', 'tools/OhMyRudolph.ContainerSmoke', '-c', 'Release', '--', '--manifest', manifest,
+                '--fixture', resolve(root, 'artifacts/astronaut.jpg'), ...(isAbsolute(podman) ? ['--podman', podman] : []), '--connection', connection]);
             break;
+        case 'image-build': run(process.execPath, ['scripts/container-build.mjs', ...files]); break;
+        case 'package': run(process.execPath, ['scripts/package-build.mjs', ...files]); break;
         case 'ui-smoke':
-            if (files.length < 1 || files.length > 2 || files[0] !== '--approved-no-camera' ||
-                (files.length === 2 && files[1] !== '--observe'))
+            if (files.length < 1 || files.length > 2 || files[0] !== '--approved-no-camera' || (files.length === 2 && files[1] !== '--observe'))
                 throw new Error('실행 직전 사용자 승인 후 ui-smoke --approved-no-camera로 실행하세요. 카메라/사진 저장은 실행하지 않습니다.');
-            run('dotnet', ['run', '--project', 'tools/OhMyRudolph.UiSmoke', '-c', 'Release', '--',
-                '--approved-no-camera', resolve(root, 'OhMyRudolph.Wpf/bin/Release/net10.0-windows/OhMyRudolph.Wpf.exe'),
-                ...(files[1] === '--observe' ? ['--observe'] : [])]);
+            run('dotnet', ['run', '--project', 'tools/OhMyRudolph.UiSmoke', '-c', 'Release', '--', '--approved-no-camera',
+                resolve(root, 'OhMyRudolph.Wpf/bin/Release/net10.0-windows/OhMyRudolph.Wpf.exe'), ...(files[1] === '--observe' ? ['--observe'] : [])]);
             break;
-        case 'run':
-            if (!existsSync(python)) throw new Error('먼저 doctor로 Python 환경을 확인하세요.');
-            run('dotnet', ['run', '--project', 'OhMyRudolph.Wpf', '-c', 'Release']);
-            break;
+        case 'run': run('dotnet', ['run', '--project', 'OhMyRudolph.Wpf', '-c', 'Release']); break;
         case 'help':
-            console.log('개발 하네스: node scripts/dev.mjs doctor|restore|build|test|verify|pipe-smoke|format[-check] <파일...>|run');
-            console.log('실행 직전 승인 전용: ui-smoke --approved-no-camera [--observe] (기본 verify에서 실행하지 않음)');
-            console.log('run은 실제 앱을 엽니다. UI 조작·실카메라 사용·사진 저장은 별도 승인 후 수행하세요.');
+            console.log('개발 하네스: doctor|restore|build|test|verify|container-smoke|image-build|package|format[-check] <파일...>|run');
+            console.log('실행 직전 승인 전용: ui-smoke --approved-no-camera [--observe]. 기본 verify는 앱/카메라를 실행하지 않습니다.');
             break;
         default: throw new Error(`알 수 없는 명령: ${command}`);
     }

@@ -1,0 +1,17 @@
+*
+!native/
+!native/**
+!OhMyRudolph.Abstractions/
+!OhMyRudolph.Abstractions/**
+!OhMyRudolph.Interop/
+!OhMyRudolph.Interop/**
+!OhMyRudolph.ProcessingHost/
+!OhMyRudolph.ProcessingHost/**
+!Directory.Build.props
+!Directory.Packages.props
+!global.json
+!Containerfile
+**/bin/
+**/obj/
+**/.git/
+**/__pycache__/

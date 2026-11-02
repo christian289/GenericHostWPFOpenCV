@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../OhMyRudolph.Abstractions/OhMyRudolph.Abstractions.csproj" />
+    <ProjectReference Include="../OhMyRudolph.Interop/OhMyRudolph.Interop.csproj" />
+  </ItemGroup>
+</Project>

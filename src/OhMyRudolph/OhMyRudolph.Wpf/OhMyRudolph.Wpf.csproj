@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="OpenCvSharp4.runtime.win" />
+    <PackageReference Include="Velopack" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,16 +18,5 @@
     <ProjectReference Include="..\OhMyRudolph.Wpf.UserControls\OhMyRudolph.Wpf.UserControls.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="FaceMeshFastApiServer.py">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="NamedPipeFaceMeshServer.py">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="requirements.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
 </Project>

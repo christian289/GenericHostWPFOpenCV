@@ -6,8 +6,9 @@ public sealed record FaceMeshFrameMetadata(
 
 public enum FaceMeshStatus { Ok, NoFace }
 
+public readonly record struct FaceMeshPoint(int X, int Y);
+
 public sealed record FaceMeshResponse(
     FaceMeshFrameMetadata Metadata, FaceMeshStatus Status,
-    IReadOnlyList<(int X, int Y)> Landmarks);
+    IReadOnlyList<FaceMeshPoint> Landmarks);
 
-public sealed class FaceMeshServerException(string message) : IOException(message) { }

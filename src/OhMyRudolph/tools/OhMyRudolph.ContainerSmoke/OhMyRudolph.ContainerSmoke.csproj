@@ -5,6 +5,5 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../OhMyRudolph.Core/OhMyRudolph.Core.csproj" />
-    <None Include="../../OhMyRudolph.Wpf/NamedPipeFaceMeshServer.py" Link="NamedPipeFaceMeshServer.py" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

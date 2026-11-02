@@ -11,6 +11,8 @@
   </Folder>
   <Project Path="OhMyRudolph.Abstractions/OhMyRudolph.Abstractions.csproj" />
   <Project Path="OhMyRudolph.Domain/OhMyRudolph.Domain.csproj" />
+  <Project Path="OhMyRudolph.Interop/OhMyRudolph.Interop.csproj" />
+  <Project Path="OhMyRudolph.ProcessingHost/OhMyRudolph.ProcessingHost.csproj" />
   <Project Path="OhMyRudolph.Core/OhMyRudolph.Core.csproj" Id="d5676782-49ed-485c-a1eb-7ebe547c9366" />
   <Project Path="OhMyRudolph.Wpf.Controls/OhMyRudolph.Wpf.Controls.csproj" Id="6c95de9a-1527-4c6a-9b33-249b8bfff09e" />
   <Project Path="OhMyRudolph.Wpf.Core/OhMyRudolph.Wpf.Core.csproj" Id="5961da18-f932-4074-aede-db025b6ec7ce" />
@@ -18,6 +20,7 @@
   <Project Path="OhMyRudolph.Wpf/OhMyRudolph.Wpf.csproj" Id="a0ade0ca-f419-4612-bf3b-304f0f57072e" />
   <Project Path="tests/OhMyRudolph.Tests/OhMyRudolph.Tests.csproj" />
   <Project Path="tests/OhMyRudolph.Domain.Tests/OhMyRudolph.Domain.Tests.csproj" />
-  <Project Path="tools/OhMyRudolph.PipeSmoke/OhMyRudolph.PipeSmoke.csproj" />
+  <Project Path="tests/OhMyRudolph.ProcessingHost.Tests/OhMyRudolph.ProcessingHost.Tests.csproj" />
   <Project Path="tools/OhMyRudolph.UiSmoke/OhMyRudolph.UiSmoke.csproj" />
+  <Project Path="tools/OhMyRudolph.ContainerSmoke/OhMyRudolph.ContainerSmoke.csproj" />
 </Solution>

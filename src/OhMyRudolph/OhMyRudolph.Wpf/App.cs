@@ -1,4 +1,5 @@
 using OhMyRudolph.Core.Clients;
+using OhMyRudolph.Core.Containers;
 using OhMyRudolph.Core.Effects;
 using OhMyRudolph.Core.Managers;
 using OhMyRudolph.Wpf.UserControls;
@@ -8,6 +9,7 @@ namespace OhMyRudolph.Wpf;
 internal sealed class App : Application
 {
     private IHost? _host;
+    private MainWindowViewModel? _mainViewModel;
     private bool _closing;
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -19,7 +21,8 @@ internal sealed class App : Application
             _host = BootStrapper();
             await _host.StartAsync();
             MainWindow = _host.Services.GetRequiredService<MainWindow>();
-            MainWindow.DataContext = _host.Services.GetRequiredService<MainWindowViewModel>();
+            _mainViewModel = _host.Services.GetRequiredService<MainWindowViewModel>();
+            MainWindow.DataContext = _mainViewModel;
             MainWindow.Closed += OnMainWindowClosed;
             MainWindow.Show();
         }
@@ -57,12 +60,18 @@ internal sealed class App : Application
         if (host is null)
             return;
         _host = null;
-        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         try
         {
-            await host.Services.GetRequiredService<VideoViewModel>().DisposeAsync();
-            await host.Services.GetRequiredService<DetectingNoseViewModel>().DisposeAsync();
-            await host.Services.GetRequiredService<CameraManager>().DisposeAsync();
+            var viewModel = _mainViewModel;
+            _mainViewModel = null;
+            if (viewModel is not null)
+            {
+                await viewModel.PhotoViewModel.DisposeAsync();
+                await viewModel.VideoViewModel.DisposeAsync();
+                await viewModel.VideoViewModel.DetectingNoseViewModel.DisposeAsync();
+                await viewModel.VideoViewModel.CameraManager.DisposeAsync();
+            }
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             await host.StopAsync(timeout.Token);
         }
         finally
@@ -87,7 +96,8 @@ internal sealed class App : Application
             .ConfigureServices((context, services) =>
             {
                 services.AddSingleton<CameraManager>();
-                services.AddSingleton<FaceMeshClient>();
+                services.AddSingleton<IProcessingRuntime, PodmanProcessingRuntime>();
+                services.AddSingleton<ContainerFaceMeshClient>();
                 services.AddSingleton<FinalPageViewModel>();
                 services.AddSingleton<DetectingNoseViewModel>();
                 services.AddSingleton<ReadyScreenViewModel>();
@@ -101,7 +111,6 @@ internal sealed class App : Application
                 services.AddSingleton<DrawingRudolphEffect>();
                 services.AddSingleton<OverlayDeadpoolEffect>();
 
-                services.AddHttpClient<FastApiFaceMeshClient>();
             })
             .Build();
 

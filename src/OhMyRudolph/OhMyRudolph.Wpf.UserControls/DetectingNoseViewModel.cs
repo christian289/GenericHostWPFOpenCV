@@ -15,7 +15,7 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
     IRecipient<PropertyChangedMessage<CameraService>>, IRecipient<PropertyChangedMessage<bool>>, IAsyncDisposable
 {
     private readonly ILogger<DetectingNoseViewModel> _logger;
-    private readonly FaceMeshClient _faceMeshClient;
+    private readonly ContainerFaceMeshClient _faceMeshClient;
     private readonly object _sessionGate = new();
     private readonly FrameGeneration _generation = new();
     private readonly LatestFrameProcessor<PendingFrame> _processor;
@@ -40,7 +40,7 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
     private PreviewInferenceStatus _blockedStatus;
     private string _blockedMessage = string.Empty;
 
-    public DetectingNoseViewModel(ILogger<DetectingNoseViewModel> logger, FaceMeshClient faceMeshClient)
+    public DetectingNoseViewModel(ILogger<DetectingNoseViewModel> logger, ContainerFaceMeshClient faceMeshClient)
     {
         _logger = logger;
         _faceMeshClient = faceMeshClient;
@@ -106,7 +106,7 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
         return Task.CompletedTask;
     }
 
-    /// <summary>Invalidates presentation immediately and awaits owned pipe/server shutdown.</summary>
+    /// <summary>Invalidates presentation immediately and awaits all owned transport/container cleanup.</summary>
     public Task StopPreviewAsync(CancellationToken cancellationToken = default)
     {
         lock (_sessionGate)
@@ -129,7 +129,7 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
             if (_camera is not null)
                 _camera.StateChanged -= OnCameraStateChanged;
             _camera = camera;
-            // Disconnect cancels native pipe I/O immediately; later frames await its completion before reconnecting.
+            // Every cleanup joins this chain before mode ownership can pass to another consumer.
             _disconnectTask = DisconnectTransportAsync(_disconnectTask);
             ClearPresentation();
             EffectApplyAvailable = false;
@@ -148,12 +148,13 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
     {
         try
         {
-            await previous.ConfigureAwait(false);
-            await _faceMeshClient.DisconnectAsync().ConfigureAwait(false);
+            try { await previous.ConfigureAwait(false); }
+            finally { await _faceMeshClient.DisconnectAsync().ConfigureAwait(false); }
         }
         catch (Exception ex)
         {
             _logger.LogWarning("얼굴 감지 연결 종료 오류 유형: {ErrorType}", ex.GetType().Name);
+            throw;
         }
     }
 
@@ -166,7 +167,7 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
         int retryVersion;
         lock (_sessionGate)
         {
-            if (_disposed || !_generation.IsCurrent(pending.Stamp))
+            if (_disposed || request.IsCancellationRequested || !_generation.IsCurrent(pending.Stamp))
                 return;
             _requestCancellation = request;
             disconnected = _disconnectTask;
@@ -176,7 +177,6 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
 
         try
         {
-            await disconnected.WaitAsync(request.Token).ConfigureAwait(false);
             if (_transportGeneration != pending.Stamp.Generation || _transportRetryVersion != retryVersion)
             {
                 _transportGeneration = pending.Stamp.Generation;
@@ -193,16 +193,31 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
                 bool requesting = false;
                 try
                 {
+                    await disconnected.WaitAsync(request.Token).ConfigureAwait(false);
                     if (!_connected)
                     {
                         await PublishStateAsync(pending, PreviewInferenceStatus.Connecting,
-                            "얼굴 감지에 연결 중입니다. 효과 없음을 선택하면 즉시 미리보기를 계속할 수 있습니다.", request.Token).ConfigureAwait(false);
-                        await _faceMeshClient.StartAsync(request.Token).ConfigureAwait(false);
-                        await _faceMeshClient.ConnectAsync(request.Token).ConfigureAwait(false);
+                            "로컬 처리 컨테이너 준비 중입니다. 최초 이미지 가져오기는 최대 5분입니다. 효과 없음을 선택하면 미리보기를 계속할 수 있습니다.", request.Token).ConfigureAwait(false);
+                        Task startup;
+                        lock (_sessionGate)
+                        {
+                            if (_disposed || request.IsCancellationRequested || !_generation.IsCurrent(pending.Stamp))
+                                return;
+                            startup = _faceMeshClient.StartAsync(request.Token);
+                        }
+                        await startup.ConfigureAwait(false);
                         _connected = true;
                     }
-                    requesting = true;
-                    FaceMeshResponse response = await _faceMeshClient.RequestAsync(frame.Image, frame.Metadata, request.Token).ConfigureAwait(false);
+                    Task<FaceMeshResponse> inference;
+                    lock (_sessionGate)
+                    {
+                        if (_disposed || request.IsCancellationRequested || !_generation.IsCurrent(pending.Stamp))
+                            return;
+                        requesting = true;
+                        inference = _faceMeshClient.RequestAsync(frame.Image, frame.Metadata, request.Token);
+                    }
+                    // The worker must keep borrowing this Mat until the request itself has settled.
+                    FaceMeshResponse response = await inference.ConfigureAwait(false);
                     request.Token.ThrowIfCancellationRequested();
                     if (response.Status == FaceMeshStatus.Ok)
                     {
@@ -225,18 +240,24 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
                 }
                 catch (Exception ex)
                 {
-                    _inferenceBlocked = true;
-                    _connected = false;
-                    _blockedStatus = requesting ? PreviewInferenceStatus.InferenceFailed : PreviewInferenceStatus.ConnectionFailed;
-                    _blockedMessage = requesting
-                        ? "얼굴 감지에 실패했습니다. 원본 미리보기로 촬영할 수 있으며 다시 시작하면 연결을 재시도합니다."
-                        : "얼굴 감지 서버에 연결하지 못했습니다. 원본 미리보기로 촬영할 수 있으며 다시 시작하면 연결을 재시도합니다.";
+                    lock (_sessionGate)
+                    {
+                        if (_disposed || request.IsCancellationRequested || !_generation.IsCurrent(pending.Stamp))
+                            return;
+                        _inferenceBlocked = true;
+                        _connected = false;
+                        _blockedStatus = requesting ? PreviewInferenceStatus.InferenceFailed : PreviewInferenceStatus.ConnectionFailed;
+                        _blockedMessage = requesting
+                            ? "얼굴 감지에 실패했습니다. 원본 미리보기로 촬영할 수 있으며 다시 시작하면 연결을 재시도합니다."
+                            : "얼굴 감지 서버에 연결하지 못했습니다. 원본 미리보기로 촬영할 수 있으며 다시 시작하면 연결을 재시도합니다.";
+                        // Do not hold the frame worker on cleanup: no-effect preview must keep flowing.
+                        _disconnectTask = DisconnectTransportAsync(_disconnectTask);
+                    }
                     _logger.LogWarning("얼굴 감지 오류 유형: {ErrorType}", ex.GetType().Name);
-                    await _faceMeshClient.DisconnectAsync().ConfigureAwait(false);
                 }
             }
 
-            if (_inferenceBlocked)
+            if (applyEffect && _inferenceBlocked)
             {
                 status = _blockedStatus;
                 message = _blockedMessage;
@@ -381,8 +402,8 @@ public sealed partial class DetectingNoseViewModel : ObservableRecipient,
 
     private async Task FinishDisposeAsync()
     {
-        await _processor.DisposeAsync().ConfigureAwait(false);
-        await _disconnectTask.ConfigureAwait(false);
+        try { await _processor.DisposeAsync().ConfigureAwait(false); }
+        finally { await _disconnectTask.ConfigureAwait(false); }
     }
 
     private sealed class PendingFrame(CameraService camera, CameraFrame frame, FrameStamp stamp) : IDisposable
